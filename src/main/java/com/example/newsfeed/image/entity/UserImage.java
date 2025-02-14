@@ -1,14 +1,13 @@
 package com.example.newsfeed.image.entity;
 
+import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
 @NoArgsConstructor
-public class Image {
-
+@Table(name = "user_images")
+public class UserImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,11 +15,16 @@ public class Image {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @Column(name = "image_type")
+    @Column(name = "image_type", nullable = false)
     private String imageType;
 
-    public Image(String imageUrl, String imageType) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    public UserImage(String imageUrl, String imageType, User user) {
         this.imageUrl = imageUrl;
         this.imageType = imageType;
+        this.user = user;
     }
 }
