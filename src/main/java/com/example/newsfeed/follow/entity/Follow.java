@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(
+        name = "follows",
         uniqueConstraints = @UniqueConstraint(columnNames = {"from_user_id", "to_user_id"}) // 중복 팔로우 방지
 )
 @NoArgsConstructor
