@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
+@Table(name = "users")
 public class User extends BaseEntity {
 
     @Id
@@ -24,11 +25,10 @@ public class User extends BaseEntity {
     @Column(name = "is_delete")
     private int isDeleted;
 
-    public User(String email, String password, String name) {
+    public User(String email, String password, String name, int isDeleted) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.isDeleted = isDeleted;
     }
-
-
 }
