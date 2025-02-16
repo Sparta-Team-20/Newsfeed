@@ -1,28 +1,25 @@
 package com.example.newsfeed.board.dto;
 
-import com.example.newsfeed.image.entity.BoardImage;
 import lombok.Getter;
-
-import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
-public class BoardResponseDto {
+public class BoardPageResponseDto {
     private final Long id;
-    private final Long userId;
     private final String title;
     private final String contents;
+    private final int commentCount;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
+    private final String userName;
 
-    public BoardResponseDto(Long id, Long userId, String title, String contents, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    public BoardPageResponseDto(Long id, String title, String contents, int commentCount, LocalDateTime createdAt, LocalDateTime modifiedAt, String userName) {
         this.id = id;
-        this.userId = userId;
         this.title = title;
         this.contents = contents;
+        this.commentCount = commentCount;
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
+        this.userName = userName;
     }
 }
