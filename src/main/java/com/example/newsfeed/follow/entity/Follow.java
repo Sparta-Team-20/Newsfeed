@@ -1,5 +1,6 @@
 package com.example.newsfeed.follow.entity;
 
+import com.example.newsfeed.common.entity.BaseEntity;
 import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
         uniqueConstraints = @UniqueConstraint(columnNames = {"follower_id", "following_id"}) // 중복 팔로우 방지
 )
 @NoArgsConstructor
-public class Follow {
+public class Follow extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,4 +40,7 @@ public class Follow {
         this.following = following;
     }
 
+    public static Follow toEntity(User user, User targetUser) {
+        return new Follow(user, targetUser);
+    }
 }

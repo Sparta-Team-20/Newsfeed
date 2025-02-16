@@ -2,11 +2,13 @@ package com.example.newsfeed.image.entity;
 
 import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "user_images")
+@Table(name = "users_images")
 public class UserImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
