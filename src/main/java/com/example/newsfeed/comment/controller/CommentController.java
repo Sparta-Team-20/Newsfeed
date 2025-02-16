@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class CommentController {
@@ -15,16 +17,14 @@ public class CommentController {
 
     @PostMapping("/boards/{boardId}/comments")
     public ResponseEntity<CommentSaveResponseDto> saveComment(
-            @PathVariable Long userId,
             @PathVariable Long boardId,
             @RequestBody CommentSaveRequestDto dto
     ) {
         return new ResponseEntity<>(commentService.saveComment(boardId, dto), HttpStatus.CREATED);
     }
 
-    @GetMapping("/boards/{boardId}/comments")
+    @GetMapping("/boards/{boardId}/comments/{id}")
     public ResponseEntity<CommentResponseDto> findCommentById(
-            @PathVariable Long userId,
             @PathVariable Long boardId,
             @PathVariable Long id
     ) {
@@ -32,7 +32,7 @@ public class CommentController {
     }
 
     @GetMapping("/boards/{boardId}/comments")
-    public ResponseEntity<CommentResponseDto> findAllComments(@PathVariable Long boardId) {
+    public ResponseEntity<List<CommentResponseDto>> findAllComments(@PathVariable Long boardId) {
         return ResponseEntity.ok(commentService.findAllComments(boardId));
     }
 
