@@ -1,9 +1,13 @@
 package com.example.newsfeed.user.entity;
 
 import com.example.newsfeed.common.entity.BaseEntity;
+import com.example.newsfeed.follow.entity.Follow;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -22,10 +26,16 @@ public class User extends BaseEntity {
 
     private String name;
 
-    @Column(name = "is_delete")
-    private int isDeleted;
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> followers = new ArrayList<>();
 
-    public User(String email, String password, String name, int isDeleted) {
+    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follow> followings = new ArrayList<>();
+
+    @Column(name = "is_delete")
+    private boolean isDeleted;
+
+    public User(String email, String password, String name, boolean isDeleted) {
         this.email = email;
         this.password = password;
         this.name = name;
