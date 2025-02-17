@@ -1,12 +1,15 @@
 package com.example.newsfeed.image.entity;
 
+import com.example.newsfeed.image.dto.request.UserImageRequestDto;
 import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "user_images")
+@Table(name = "users_image")
 public class UserImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +29,9 @@ public class UserImage {
         this.imageUrl = imageUrl;
         this.imageType = imageType;
         this.user = user;
+    }
+
+    public static UserImage toEntity(User user, UserImageRequestDto images) {
+        return new UserImage(images.getImageUrl(), images.getImageType(), user);
     }
 }

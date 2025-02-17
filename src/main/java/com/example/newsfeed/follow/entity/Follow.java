@@ -1,5 +1,6 @@
 package com.example.newsfeed.follow.entity;
 
+import com.example.newsfeed.common.entity.BaseEntity;
 import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,31 +13,34 @@ import java.time.LocalDateTime;
 @Entity
 @Table(
         name = "follows",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"from_user_id", "to_user_id"}) // 중복 팔로우 방지
+        uniqueConstraints = @UniqueConstraint(columnNames = {"follower_id", "following_id"}) // 중복 팔로우 방지
 )
 @NoArgsConstructor
-public class Follow {
+public class Follow extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_user_id", nullable = false)
-    private User fromUser;
+    @JoinColumn(name = "follower_id", nullable = false)
+    private User follower;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_user_id", nullable = false)
-    private User toUser;
+    @JoinColumn(name = "following_id", nullable = false)
+    private User following;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    public Follow(User fromUser, User toUser) {
-        this.fromUser = fromUser;
-        this.toUser = toUser;
+    public Follow(User follower, User following) {
+        this.follower = follower;
+        this.following = following;
     }
 
+    public static Follow toEntity(User user, User targetUser) {
+        return new Follow(user, targetUser);
+    }
 }
