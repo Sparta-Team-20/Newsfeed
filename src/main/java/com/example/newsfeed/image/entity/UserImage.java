@@ -1,6 +1,6 @@
 package com.example.newsfeed.image.entity;
 
-import com.example.newsfeed.image.dto.request.UserImageRequestDto;
+import com.example.newsfeed.image.dto.request.ImageRequestDto;
 import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class UserImage {
         this.user = user;
     }
 
-    public static UserImage toEntity(User user, UserImageRequestDto images) {
+    public static UserImage toEntity(User user, ImageRequestDto images) {
         return new UserImage(images.getImageUrl(), images.getImageType(), user);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.newsfeed.comment.repository;
 
+import com.example.newsfeed.comment.dto.CommentCountDto;
 import com.example.newsfeed.comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,5 +19,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      */
     @Query("SELECT c FROM Comment c WHERE c.board.id = :boardId ORDER BY c.modifiedAt DESC")
     List<Comment> findAllByBoardId(Long boardId);
+
+    @Query("SELECT c FROM Comment c JOIN FETCH c.user WHERE c.board.id = :boardId")
+    List<Comment> findAllByBoardIdAndUser(Long boardId);
+
+    List<CommentCountDto> countByBoardIds(List<Long> boardIds);
 
 }

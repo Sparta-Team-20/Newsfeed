@@ -39,8 +39,8 @@ public class CommentService {
                                           savedComment.getUser().getId(),
                                           savedComment.getBoard().getId(),
                                           savedComment.getContent(),
-                                          String.valueOf(savedComment.getCreatedAt()),
-                                          String.valueOf(savedComment.getCreatedAt())
+                                          savedComment.getCreatedAt(),
+                                          savedComment.getCreatedAt()
         );
     }
 
@@ -56,8 +56,8 @@ public class CommentService {
                                       comment.getUser().getId(),
                                       comment.getBoard().getId(),
                                       comment.getContent(),
-                                      String.valueOf(comment.getCreatedAt()),
-                                      String.valueOf(comment.getCreatedAt())
+                                      comment.getCreatedAt(),
+                                      comment.getCreatedAt()
         );
 
     }
@@ -74,8 +74,8 @@ public class CommentService {
                                                comment.getUser().getId(),
                                                comment.getBoard().getId(),
                                                comment.getContent(),
-                                               String.valueOf(comment.getCreatedAt()),
-                                               String.valueOf(comment.getCreatedAt()))
+                                               comment.getCreatedAt(),
+                                               comment.getCreatedAt())
                 )
                 .collect(Collectors.toList());
     }
@@ -96,8 +96,8 @@ public class CommentService {
                                             comment.getUser().getId(),
                                             comment.getBoard().getId(),
                                             comment.getContent(),
-                                            String.valueOf(comment.getCreatedAt()),
-                                            String.valueOf(comment.getCreatedAt())
+                                            comment.getCreatedAt(),
+                                            comment.getCreatedAt()
         );
     }
 
