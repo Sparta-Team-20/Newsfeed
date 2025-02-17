@@ -1,4 +1,4 @@
-package com.example.newsfeed.board.consts;
+package com.example.newsfeed.common.consts;
 
 public abstract class Const {
 

@@ -1,7 +1,12 @@
 package com.example.newsfeed.board.controller;
 
-import com.example.newsfeed.board.consts.Const;
-import com.example.newsfeed.board.dto.*;
+import com.example.newsfeed.common.consts.Const;
+import com.example.newsfeed.board.dto.request.BoardSaveRequestDto;
+import com.example.newsfeed.board.dto.request.BoardUpdateRequestDto;
+import com.example.newsfeed.board.dto.response.BoardPageResponseDto;
+import com.example.newsfeed.board.dto.response.BoardResponseDto;
+import com.example.newsfeed.board.dto.response.BoardSaveResponseDto;
+import com.example.newsfeed.board.dto.response.BoardUpdateResponseDto;
 import com.example.newsfeed.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class BoardController {
 
     private final BoardService boardService;
@@ -53,12 +59,12 @@ public class BoardController {
             @SessionAttribute(name = Const.LOGIN_USER) Long userId,
             @PathVariable Long id
     ) {
-        boardService.deleteById(id, userId);
+        boardService.delete(id, userId);
         return ResponseEntity.ok().build();
     }
 
     // 게시물 페이지 API
-    @GetMapping("/boards/{page}")
+    @GetMapping("/boards/page")
     public ResponseEntity<Page<BoardPageResponseDto>> findAllPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size

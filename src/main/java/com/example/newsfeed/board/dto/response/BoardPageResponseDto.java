@@ -1,7 +1,8 @@
-package com.example.newsfeed.board.dto;
+package com.example.newsfeed.board.dto.response;
 
 import lombok.Getter;
 import java.time.LocalDateTime;
+
 
 @Getter
 public class BoardPageResponseDto {
@@ -12,6 +13,7 @@ public class BoardPageResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
     private final String userName;
+
 
     public BoardPageResponseDto(Long id, String title, String contents, int commentCount, LocalDateTime createdAt, LocalDateTime modifiedAt, String userName) {
         this.id = id;

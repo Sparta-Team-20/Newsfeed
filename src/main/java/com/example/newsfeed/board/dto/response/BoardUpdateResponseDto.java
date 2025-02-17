@@ -1,4 +1,4 @@
-package com.example.newsfeed.board.dto;
+package com.example.newsfeed.board.dto.response;
 
 import lombok.Getter;
 import java.time.LocalDateTime;

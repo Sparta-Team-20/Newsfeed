@@ -1,6 +1,12 @@
 package com.example.newsfeed.board.service;
 
 import com.example.newsfeed.board.dto.*;
+import com.example.newsfeed.board.dto.request.BoardSaveRequestDto;
+import com.example.newsfeed.board.dto.request.BoardUpdateRequestDto;
+import com.example.newsfeed.board.dto.response.BoardPageResponseDto;
+import com.example.newsfeed.board.dto.response.BoardResponseDto;
+import com.example.newsfeed.board.dto.response.BoardSaveResponseDto;
+import com.example.newsfeed.board.dto.response.BoardUpdateResponseDto;
 import com.example.newsfeed.board.entity.Board;
 import com.example.newsfeed.board.repository.BoardRepository;
 import com.example.newsfeed.user.entity.User;
@@ -25,7 +31,7 @@ public class BoardService {
     @Transactional
     public BoardSaveResponseDto save(Long userId, BoardSaveRequestDto dto) {
         User user = User.fromUserId(userId);
-        Board board = new Board(user, dto.getTitle(), dto.getContents());
+        Board board = new Board(dto.getTitle(), dto.getContents(), user);
         boardRepository.save(board);
         return new BoardSaveResponseDto(
                 board.getId(),
@@ -85,9 +91,9 @@ public class BoardService {
 
     // 게시물 삭제
     @Transactional
-    public void deleteById(Long boardId, Long userId) {
+    public void delete(Long boardId, Long userId) {
         Board board = boardRepository.findById(boardId)
-                        .orElseThrow(()-> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+                .orElseThrow(()-> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
         if(!userId.equals(board.getUser().getId())) {
             throw new IllegalArgumentException("본인이 작성한 스케줄만 삭제할 수 있습니다.");
         }
@@ -95,7 +101,7 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardResponseDto> findAllPage(int page, int size) {
+    public Page<BoardPageResponseDto> findAllPage(int page, int size) {
         // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
         int adjustedPage = (page > 0) ? page -1 : 0;
         PageRequest pageable = PageRequest.of(adjustedPage, size, Sort.by("modifiedAt").descending());
@@ -122,4 +128,3 @@ public class BoardService {
 
     }
 }
-

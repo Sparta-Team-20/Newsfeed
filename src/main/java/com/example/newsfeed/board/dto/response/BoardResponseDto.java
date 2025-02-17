@@ -1,12 +1,7 @@
-package com.example.newsfeed.board.dto;
+package com.example.newsfeed.board.dto.response;
 
-import com.example.newsfeed.image.entity.BoardImage;
 import lombok.Getter;
-
-import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 public class BoardResponseDto {
