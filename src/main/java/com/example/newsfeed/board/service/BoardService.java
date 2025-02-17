@@ -9,6 +9,8 @@ import com.example.newsfeed.board.dto.response.BoardSaveResponseDto;
 import com.example.newsfeed.board.dto.response.BoardUpdateResponseDto;
 import com.example.newsfeed.board.entity.Board;
 import com.example.newsfeed.board.repository.BoardRepository;
+import com.example.newsfeed.comment.dto.CommentCountDto;
+import com.example.newsfeed.comment.repository.CommentRepository;
 import com.example.newsfeed.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

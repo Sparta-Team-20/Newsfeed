@@ -1,6 +1,7 @@
 package com.example.newsfeed.comment.service;
 
 import com.example.newsfeed.board.entity.Board;
+import com.example.newsfeed.board.repository.BoardRepository;
 import com.example.newsfeed.comment.dto.request.CommentSaveRequestDto;
 import com.example.newsfeed.comment.dto.request.CommentUpdateRequestDto;
 import com.example.newsfeed.comment.dto.response.CommentResponseDto;
