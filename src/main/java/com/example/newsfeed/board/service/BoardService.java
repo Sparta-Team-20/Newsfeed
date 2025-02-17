@@ -125,7 +125,7 @@ public class BoardService {
                 commentCountMap.getOrDefault(board.getId(), 0L).intValue(),
                 board.getCreatedAt(),
                 board.getModifiedAt(),
-                board.getUser().getUserName()
+                board.getUser().getName()
         ));
 
     }

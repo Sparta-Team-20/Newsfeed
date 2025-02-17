@@ -70,4 +70,12 @@ public class User extends BaseEntity {
     public UserImage getFirstImage() {
         return this.getImages().isEmpty() ? new UserImage("none", "png", this) : this.getImages().get(0);
     }
+
+    public static User fromUserId(Long id) {
+        return new User(id);
+    }
+
+    public User(Long id) {
+        this.id = id;
+    }
 }
