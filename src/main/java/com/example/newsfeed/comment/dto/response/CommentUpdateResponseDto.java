@@ -1,4 +1,4 @@
-package com.example.newsfeed.comment.dto;
+package com.example.newsfeed.comment.dto.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
