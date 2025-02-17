@@ -5,17 +5,23 @@ import com.example.newsfeed.follow.entity.Follow;
 import com.example.newsfeed.image.entity.UserImage;
 import com.example.newsfeed.user.dto.request.UserSaveRequestDto;
 import com.example.newsfeed.user.dto.request.UserUpdateRequestDto;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Entity
-@NoArgsConstructor
 @Table(name = "users")
+@NoArgsConstructor
 public class User extends BaseEntity {
 
     @Id
@@ -48,7 +54,6 @@ public class User extends BaseEntity {
         this.isDeleted = false;
     }
 
-
     public static User toEntity(UserSaveRequestDto request, String encodedPassword) {
         return new User(request.getEmail(), encodedPassword, request.getName());
     }
@@ -56,14 +61,13 @@ public class User extends BaseEntity {
     public void update(UserUpdateRequestDto request, String encodedPassword, List<UserImage> images) {
         this.password = encodedPassword;
         this.name = request.getName();
-        this.images = images;
     }
 
     public void delete() {
         this.isDeleted = true;
     }
 
-    public Long getFollowersSize() {
-        return (long) this.followers.size();
+    public UserImage getFirstImage() {
+        return this.getImages().isEmpty() ? new UserImage("none", "png", this) : this.getImages().get(0);
     }
 }

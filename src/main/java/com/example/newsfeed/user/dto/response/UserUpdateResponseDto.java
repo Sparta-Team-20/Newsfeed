@@ -17,7 +17,8 @@ public class UserUpdateResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    private UserUpdateResponseDto(Long id, String email, String name, List<UserImageResponseDto> images, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private UserUpdateResponseDto(Long id, String email, String name, List<UserImageResponseDto> images,
+                                  LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -27,6 +28,7 @@ public class UserUpdateResponseDto {
     }
 
     public static UserUpdateResponseDto of(User user, List<UserImageResponseDto> images) {
-        return new UserUpdateResponseDto(user.getId(), user.getEmail(), user.getName(), images, user.getCreatedAt(), user.getModifiedAt());
+        return new UserUpdateResponseDto(user.getId(), user.getEmail(), user.getName(), images, user.getCreatedAt(),
+                user.getModifiedAt());
     }
 }

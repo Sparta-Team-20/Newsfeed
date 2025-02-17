@@ -18,7 +18,8 @@ public class UserSaveResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    private UserSaveResponseDto(Long id, String email, String name, List<UserImageResponseDto> images, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private UserSaveResponseDto(Long id, String email, String name, List<UserImageResponseDto> images,
+                                LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -28,6 +29,7 @@ public class UserSaveResponseDto {
     }
 
     public static UserSaveResponseDto of(User user, List<UserImageResponseDto> images) {
-        return new UserSaveResponseDto(user.getId(), user.getEmail(), user.getName(), images, user.getCreatedAt(), user.getModifiedAt());
+        return new UserSaveResponseDto(user.getId(), user.getEmail(), user.getName(), images, user.getCreatedAt(),
+                user.getModifiedAt());
     }
 }

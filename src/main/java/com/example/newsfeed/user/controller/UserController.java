@@ -40,9 +40,16 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/users/{id}")
+    /*@PostMapping("/users/{id}")
     public ResponseEntity<UserFindOneResponseDto> follow(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER") Long userId) {
         UserFindOneResponseDto response = userService.follow(userId, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }*/
+
+    @PostMapping("/users/{id}")
+    public ResponseEntity<UserFindOneResponseDto> follow(@RequestParam("userId") Long id,
+                                                         @RequestParam("targetId") Long targetId) {
+        UserFindOneResponseDto response = userService.follow(id, targetId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

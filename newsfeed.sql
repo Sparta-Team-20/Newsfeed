@@ -6,7 +6,7 @@ CREATE TABLE users
     name        VARCHAR(20) NOT NULL,
     created_at  DATETIME    NOT NULL,
     modified_at DATETIME    NOT NULL,
-    is_deleted  BOOLEAN     NOT NULL
+    is_delete  BOOLEAN     NOT NULL
 );
 
 CREATE TABLE users_image

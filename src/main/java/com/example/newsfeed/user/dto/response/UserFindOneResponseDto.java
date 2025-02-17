@@ -18,7 +18,9 @@ public class UserFindOneResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    private UserFindOneResponseDto(Long id, String email, String name, List<UserImageResponseDto> images, List<UserInfoResponseDto> followers, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private UserFindOneResponseDto(Long id, String email, String name, List<UserImageResponseDto> images,
+                                   List<UserInfoResponseDto> followers, LocalDateTime createdAt,
+                                   LocalDateTime modifiedAt) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -28,7 +30,9 @@ public class UserFindOneResponseDto {
         this.modifiedAt = modifiedAt;
     }
 
-    public static UserFindOneResponseDto of(User user, List<UserImageResponseDto> images, List<UserInfoResponseDto> followers) {
-        return new UserFindOneResponseDto(user.getId(), user.getEmail(), user.getName(), images, followers, user.getCreatedAt(), user.getModifiedAt());
+    public static UserFindOneResponseDto of(User user, List<UserImageResponseDto> images,
+                                            List<UserInfoResponseDto> followers) {
+        return new UserFindOneResponseDto(user.getId(), user.getEmail(), user.getName(), images, followers,
+                user.getCreatedAt(), user.getModifiedAt());
     }
 }

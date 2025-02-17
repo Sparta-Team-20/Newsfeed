@@ -1,27 +1,35 @@
 package com.example.newsfeed.user.service;
 
+import com.example.newsfeed.follow.dto.FollowCountDto;
 import com.example.newsfeed.follow.entity.Follow;
+import com.example.newsfeed.follow.service.FollowService;
 import com.example.newsfeed.image.dto.response.UserImageResponseDto;
 import com.example.newsfeed.image.entity.UserImage;
+import com.example.newsfeed.image.service.UserImageService;
 import com.example.newsfeed.user.dto.request.UserSaveRequestDto;
 import com.example.newsfeed.user.dto.request.UserUpdateRequestDto;
-import com.example.newsfeed.user.dto.response.*;
+import com.example.newsfeed.user.dto.response.UserFindAllResponseDto;
+import com.example.newsfeed.user.dto.response.UserFindOneResponseDto;
+import com.example.newsfeed.user.dto.response.UserInfoResponseDto;
+import com.example.newsfeed.user.dto.response.UserSaveResponseDto;
+import com.example.newsfeed.user.dto.response.UserUpdateResponseDto;
 import com.example.newsfeed.user.entity.User;
 import com.example.newsfeed.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserImageService userImageService;
+    private final FollowService followService;
 
     public UserSaveResponseDto save(UserSaveRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -31,33 +39,44 @@ public class UserService {
         //TODO : 비밀번호 암호화
         String encodedPassword = "";
         User user = User.toEntity(request, request.getPassword());
+        UserImage userImage = UserImage.toEntity(user, request.getImage());
         userRepository.save(user);
+        userImageService.save(userImage);
         List<UserImageResponseDto> imageResponseList = new ArrayList<>();
-        imageResponseList.add(UserImageResponseDto.of(request.getImage()));
+        imageResponseList.add(UserImageResponseDto.of(userImage));
         return UserSaveResponseDto.of(user, imageResponseList);
     }
 
     public List<UserFindAllResponseDto> findAll() {
-        List<User> userList = userRepository.findAllBy();
+        List<User> users = userRepository.findAllBy();
+        List<Long> userIds = users.stream()
+                .map(User::getId)
+                .toList();
 
-        Map<Long, Long> countResults = userList.stream()
-                .collect(Collectors.toMap(User::getId, User::getFollowersSize));
+        List<FollowCountDto> countResults = followService.countFollowingsByUserIds(userIds);
 
-        return userList.stream().map(user -> UserFindAllResponseDto.of(user, user.getImages(),
-                countResults.getOrDefault(user.getId(), 0L))).toList();
+        Map<Long, Long> followerCountMap = countResults.stream()
+                .collect(Collectors.toMap(FollowCountDto::getUserId, FollowCountDto::getCount));
+        Map<Long, UserImage> userImageMap = users.stream()
+                .collect(Collectors.toMap(User::getId, User::getFirstImage));
+        return users.stream().map(user -> UserFindAllResponseDto.of(user, userImageMap.get(user.getId()),
+                followerCountMap.getOrDefault(user.getId(), 0L))).toList();
     }
 
     public UserFindOneResponseDto findById(Long id) {
+        //쿼리 1번
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저는 존재하지 않습니다."));
 
         List<UserImageResponseDto> images = user.getImages().stream()
                 .map(UserImageResponseDto::of).toList();
-        List<UserInfoResponseDto> followers = user.getFollowers().stream()
-                .map(follow -> UserInfoResponseDto.of(follow.getFollower()))
-                .collect(Collectors.toList());
-        return UserFindOneResponseDto.of(user, images, followers);
+
+        List<Follow> followers = followService.findByFollowingId(user.getId());
+        List<UserInfoResponseDto> userInfoResponseDtos = followers.stream().map(
+                follow -> UserInfoResponseDto.of(follow.getFollower())).toList();
+        return UserFindOneResponseDto.of(user, images, userInfoResponseDtos);
     }
+
 
     @Transactional
     public UserFindOneResponseDto follow(Long userId, Long targetUserId) {
@@ -80,11 +99,12 @@ public class UserService {
 
         List<UserImageResponseDto> images = user.getImages().stream()
                 .map(UserImageResponseDto::of).toList();
-        List<UserInfoResponseDto> followers = user.getFollowers().stream()
-                .map(follow -> UserInfoResponseDto.of(follow.getFollower()))
-                .collect(Collectors.toList());
 
-        return UserFindOneResponseDto.of(user, images, followers);
+        List<Follow> followers = followService.findByFollowingId(user.getId());
+        List<UserInfoResponseDto> userInfoResponseDtos = followers.stream().map(
+                follow -> UserInfoResponseDto.of(follow.getFollower())).toList();
+
+        return UserFindOneResponseDto.of(user, images, userInfoResponseDtos);
     }
 
     @Transactional

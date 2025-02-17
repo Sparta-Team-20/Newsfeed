@@ -19,7 +19,8 @@ public class UserFindAllResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    private UserFindAllResponseDto(Long id, String email, String name, UserImageResponseDto image, Long followerCount, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+    private UserFindAllResponseDto(Long id, String email, String name, UserImageResponseDto image, Long followerCount,
+                                   LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.email = email;
         this.name = name;
@@ -29,10 +30,9 @@ public class UserFindAllResponseDto {
         this.modifiedAt = modifiedAt;
     }
 
-    public static UserFindAllResponseDto of(User user, List<UserImage> images, Long followerCount) {
-        UserImageResponseDto imageDto = (images != null && !images.isEmpty())
-                ? UserImageResponseDto.of(images.get(0))
-                : null;
-        return new UserFindAllResponseDto(user.getId(), user.getEmail(), user.getName(), imageDto, followerCount, user.getCreatedAt(), user.getModifiedAt());
+    public static UserFindAllResponseDto of(User user, UserImage image, Long followerCount) {
+        UserImageResponseDto imageDto = UserImageResponseDto.of(image);
+        return new UserFindAllResponseDto(user.getId(), user.getEmail(), user.getName(), imageDto, followerCount,
+                user.getCreatedAt(), user.getModifiedAt());
     }
 }
