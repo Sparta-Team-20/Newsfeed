@@ -3,7 +3,7 @@ package com.example.newsfeed.user.service;
 import com.example.newsfeed.follow.dto.FollowCountDto;
 import com.example.newsfeed.follow.entity.Follow;
 import com.example.newsfeed.follow.service.FollowService;
-import com.example.newsfeed.image.dto.response.UserImageResponseDto;
+import com.example.newsfeed.image.dto.response.ImageResponseDto;
 import com.example.newsfeed.image.entity.UserImage;
 import com.example.newsfeed.image.service.UserImageService;
 import com.example.newsfeed.user.dto.request.UserSaveRequestDto;
@@ -42,8 +42,8 @@ public class UserService {
         UserImage userImage = UserImage.toEntity(user, request.getImage());
         userRepository.save(user);
         userImageService.save(userImage);
-        List<UserImageResponseDto> imageResponseList = new ArrayList<>();
-        imageResponseList.add(UserImageResponseDto.of(userImage));
+        List<ImageResponseDto> imageResponseList = new ArrayList<>();
+        imageResponseList.add(ImageResponseDto.of(userImage));
         return UserSaveResponseDto.of(user, imageResponseList);
     }
 
@@ -63,13 +63,12 @@ public class UserService {
                 followerCountMap.getOrDefault(user.getId(), 0L))).toList();
     }
 
-    public UserFindOneResponseDto findById(Long id) {
-        //쿼리 1번
-        User user = userRepository.findById(id)
+    public UserFindOneResponseDto findOne(Long id) {
+        User user = userRepository.findByIdWithAll(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저는 존재하지 않습니다."));
 
-        List<UserImageResponseDto> images = user.getImages().stream()
-                .map(UserImageResponseDto::of).toList();
+        List<ImageResponseDto> images = user.getImages().stream()
+                .map(ImageResponseDto::of).toList();
 
         List<Follow> followers = followService.findByFollowingId(user.getId());
         List<UserInfoResponseDto> userInfoResponseDtos = followers.stream().map(
@@ -80,9 +79,9 @@ public class UserService {
 
     @Transactional
     public UserFindOneResponseDto follow(Long userId, Long targetUserId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdWithAll(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        User targetUser = userRepository.findById(targetUserId)
+        User targetUser = userRepository.findByIdWithAll(targetUserId)
                 .orElseThrow(() -> new IllegalArgumentException("팔로우할 사용자를 찾을 수 없습니다."));
 
         boolean isFollowing = user.getFollowings().stream()
@@ -97,8 +96,8 @@ public class UserService {
             targetUser.getFollowers().add(follow);
         }
 
-        List<UserImageResponseDto> images = user.getImages().stream()
-                .map(UserImageResponseDto::of).toList();
+        List<ImageResponseDto> images = user.getImages().stream()
+                .map(ImageResponseDto::of).toList();
 
         List<Follow> followers = followService.findByFollowingId(user.getId());
         List<UserInfoResponseDto> userInfoResponseDtos = followers.stream().map(
@@ -109,19 +108,24 @@ public class UserService {
 
     @Transactional
     public UserUpdateResponseDto update(Long userId, UserUpdateRequestDto request) {
-        User findUser = userRepository.findById(userId)
+        User findUser = userRepository.findByIdWithAll(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         // TODO : 비밀번호 암호화
         String encodedPassword = "";
         findUser.update(request, encodedPassword, request.getImages());
-        List<UserImageResponseDto> images = new ArrayList<>();
+        List<ImageResponseDto> images = new ArrayList<>();
         return UserUpdateResponseDto.of(findUser, images);
     }
 
     @Transactional
     public void delete(Long userId) {
-        User findUser = userRepository.findById(userId).orElseThrow();
+        User findUser = userRepository.findByIdWithAll(userId).orElseThrow();
         findUser.delete();
     }
+
+    public User findById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
 }

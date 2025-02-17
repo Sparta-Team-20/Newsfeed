@@ -61,6 +61,7 @@ public class User extends BaseEntity {
     public void update(UserUpdateRequestDto request, String encodedPassword, List<UserImage> images) {
         this.password = encodedPassword;
         this.name = request.getName();
+        this.images = images;
     }
 
     public void delete() {
@@ -69,10 +70,6 @@ public class User extends BaseEntity {
 
     public UserImage getFirstImage() {
         return this.getImages().isEmpty() ? new UserImage("none", "png", this) : this.getImages().get(0);
-    }
-
-    public static User fromUserId(Long id) {
-        return new User(id);
     }
 
     public User(Long id) {
