@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-@Table(name = "board_images")
+@Table(name = "boards_image")
 public class BoardImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
