@@ -1,6 +1,5 @@
 package com.example.newsfeed.board.service;
 
-import com.example.newsfeed.board.dto.*;
 import com.example.newsfeed.board.dto.request.BoardSaveRequestDto;
 import com.example.newsfeed.board.dto.request.BoardUpdateRequestDto;
 import com.example.newsfeed.board.dto.response.BoardPageResponseDto;
@@ -77,8 +76,8 @@ public class BoardService {
     @Transactional
     public BoardUpdateResponseDto update(Long boardId, Long userId, BoardUpdateRequestDto dto) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
-        if(!userId.equals(board.getUser().getId())) {
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+        if (!userId.equals(board.getUser().getId())) {
             throw new IllegalArgumentException("본인이 작성한 스케줄만 수정할 수 있습니다.");
         }
         board.update(dto.getTitle(), dto.getContents());
@@ -95,8 +94,8 @@ public class BoardService {
     @Transactional
     public void delete(Long boardId, Long userId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(()-> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
-        if(!userId.equals(board.getUser().getId())) {
+                .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+        if (!userId.equals(board.getUser().getId())) {
             throw new IllegalArgumentException("본인이 작성한 스케줄만 삭제할 수 있습니다.");
         }
         boardRepository.delete(board);
@@ -105,7 +104,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public Page<BoardPageResponseDto> findAllPage(int page, int size) {
         // 클라이언트에서 1부터 전달된 페이지 번호를 0 기반으로 조정
-        int adjustedPage = (page > 0) ? page -1 : 0;
+        int adjustedPage = (page > 0) ? page - 1 : 0;
         PageRequest pageable = PageRequest.of(adjustedPage, size, Sort.by("modifiedAt").descending());
         // 1. Schedule Page 조회
         Page<Board> boardPage = boardRepository.findAll(pageable);
