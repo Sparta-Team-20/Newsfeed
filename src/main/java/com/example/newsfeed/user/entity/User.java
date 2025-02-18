@@ -60,10 +60,9 @@ public class User extends BaseEntity {
         return new User(request.getEmail(), encodedPassword, request.getName());
     }
 
-    public void update(UserUpdateRequestDto request, String encodedPassword, List<UserImage> images) {
+    public void update(UserUpdateRequestDto request, String encodedPassword) {
         this.password = encodedPassword;
         this.name = request.getName();
-        this.images = images;
     }
 
     public void delete() {

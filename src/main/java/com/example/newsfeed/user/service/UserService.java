@@ -6,6 +6,7 @@ import com.example.newsfeed.common.exception.ErrorCode;
 import com.example.newsfeed.follow.dto.FollowCountDto;
 import com.example.newsfeed.follow.entity.Follow;
 import com.example.newsfeed.follow.service.FollowService;
+import com.example.newsfeed.image.dto.request.ImageRequestDto;
 import com.example.newsfeed.image.dto.response.ImageResponseDto;
 import com.example.newsfeed.image.entity.UserImage;
 import com.example.newsfeed.image.service.UserImageService;
@@ -114,11 +115,9 @@ public class UserService {
     public UserUpdateResponseDto update(Long userId, UserUpdateRequestDto request) {
         User findUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
-
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        findUser.update(request, encodedPassword, request.getImages());
-        List<ImageResponseDto> images = new ArrayList<>();
-        return UserUpdateResponseDto.of(findUser, images);
+        findUser.update(request, encodedPassword);
+        return UserUpdateResponseDto.of(findUser, findUser.getImages().stream().map(ImageResponseDto::of).toList());
     }
 
     @Transactional
@@ -133,5 +132,19 @@ public class UserService {
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public UserUpdateResponseDto addImage(Long userId, ImageRequestDto request) {
+        User findUser = userRepository.findById(userId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        userImageService.save(UserImage.toEntity(findUser, request));
+        return UserUpdateResponseDto.of(findUser, findUser.getImages().stream().map(ImageResponseDto::of).toList());
+    }
+
+    public UserUpdateResponseDto deleteImage(Long userId, Long ImageId) {
+        User findUser = userRepository.findById(userId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        //TODO : 예외처리 수정
+        UserImage userImage = userImageService.findById(ImageId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        userImageService.delete(userImage);
+        return UserUpdateResponseDto.of(findUser, findUser.getImages().stream().map(ImageResponseDto::of).toList());
     }
 }

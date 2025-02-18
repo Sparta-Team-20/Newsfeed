@@ -34,4 +34,8 @@ public class UserImage {
     public static UserImage toEntity(User user, ImageRequestDto images) {
         return new UserImage(images.getImageUrl(), images.getImageType(), user);
     }
+
+    public static UserImage toEntity(User user, UserImage images) {
+        return new UserImage(images.getImageUrl(), images.getImageType(), user);
+    }
 }
