@@ -81,7 +81,6 @@ public class UserService {
         return UserFindOneResponseDto.of(user, images, userInfoResponseDtos);
     }
 
-
     @Transactional
     public UserFindOneResponseDto follow(Long userId, Long targetUserId) {
         User user = userRepository.findUsersById(userId)
@@ -94,15 +93,10 @@ public class UserService {
 
         if (existingFollow.isPresent()) {
             Follow followToRemove = existingFollow.get();
-            user.getFollowings().remove(followToRemove);
-            targetUser.getFollowers().remove(followToRemove);
             followService.delete(followToRemove);
-            followService.flush();
         } else {
             Follow follow = Follow.toEntity(user, targetUser);
             followService.save(follow);
-            user.getFollowings().add(follow);
-            targetUser.getFollowers().add(follow);
         }
 
         List<ImageResponseDto> images = user.getImages().stream()
@@ -138,17 +132,21 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    @Transactional
     public UserUpdateResponseDto addImage(Long userId, ImageRequestDto request) {
         User findUser = userRepository.findById(userId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
         userImageService.save(UserImage.toEntity(findUser, request));
         return UserUpdateResponseDto.of(findUser, findUser.getImages().stream().map(ImageResponseDto::of).toList());
     }
 
-    public UserUpdateResponseDto deleteImage(Long userId, Long ImageId) {
+    @Transactional
+    public UserUpdateResponseDto deleteImage(Long userId, Long imageId) {
         User findUser = userRepository.findById(userId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
         //TODO : 예외처리 수정
-        UserImage userImage = userImageService.findById(ImageId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        UserImage userImage = userImageService.findById(imageId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
         userImageService.delete(userImage);
+
+        findUser.getImages().removeIf(image -> image.getId().equals(imageId));
         return UserUpdateResponseDto.of(findUser, findUser.getImages().stream().map(ImageResponseDto::of).toList());
     }
 }

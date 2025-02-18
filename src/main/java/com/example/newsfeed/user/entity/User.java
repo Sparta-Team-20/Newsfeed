@@ -1,7 +1,6 @@
 package com.example.newsfeed.user.entity;
 
 import com.example.newsfeed.common.entity.BaseEntity;
-import com.example.newsfeed.follow.entity.Follow;
 import com.example.newsfeed.image.entity.UserImage;
 import com.example.newsfeed.user.dto.request.UserSaveRequestDto;
 import com.example.newsfeed.user.dto.request.UserUpdateRequestDto;
@@ -14,9 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,12 +33,6 @@ public class User extends BaseEntity {
     private String password;
 
     private String name;
-
-    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Follow> followers = new HashSet<>();
-
-    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Follow> followings = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserImage> images = new ArrayList<>();

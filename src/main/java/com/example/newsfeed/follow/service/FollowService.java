@@ -42,7 +42,4 @@ public class FollowService {
         followRepository.save(follow);
     }
 
-    public void flush() {
-        followRepository.flush();
-    }
 }
