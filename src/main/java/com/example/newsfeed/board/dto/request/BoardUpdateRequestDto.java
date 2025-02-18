@@ -20,6 +20,6 @@ public class BoardUpdateRequestDto {
     @Size(max = 200, message = CONTENTS_SIZE)
     private String contents;
 
-    @NotEmpty(message = IMAGES_NOT_NULL)
+    @NotEmpty(message = IMAGE_NOT_NULL)
     private List<BoardImage> images;
 }

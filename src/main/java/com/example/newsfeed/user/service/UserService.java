@@ -1,6 +1,8 @@
 package com.example.newsfeed.user.service;
 
 import com.example.newsfeed.common.config.PasswordEncoder;
+import com.example.newsfeed.common.exception.CustomExceptionHandler;
+import com.example.newsfeed.common.exception.ErrorCode;
 import com.example.newsfeed.follow.dto.FollowCountDto;
 import com.example.newsfeed.follow.entity.Follow;
 import com.example.newsfeed.follow.service.FollowService;
@@ -36,7 +38,7 @@ public class UserService {
 
     public UserSaveResponseDto save(UserSaveRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
+            throw new CustomExceptionHandler(ErrorCode.ALREADY_EXIST_EMAIL);
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -67,7 +69,7 @@ public class UserService {
 
     public UserFindOneResponseDto findOne(Long id) {
         User user = userRepository.findUsersById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저는 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
         List<ImageResponseDto> images = user.getImages().stream()
                 .map(ImageResponseDto::of).toList();
@@ -82,9 +84,9 @@ public class UserService {
     @Transactional
     public UserFindOneResponseDto follow(Long userId, Long targetUserId) {
         User user = userRepository.findUsersById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
         User targetUser = userRepository.findUsersById(targetUserId)
-                .orElseThrow(() -> new IllegalArgumentException("팔로우할 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_FOLLOW_USER));
 
         boolean isFollowing = user.getFollowings().stream()
                 .anyMatch(follow -> follow.getFollowing().getId().equals(targetUserId));
@@ -111,7 +113,7 @@ public class UserService {
     @Transactional
     public UserUpdateResponseDto update(Long userId, UserUpdateRequestDto request) {
         User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         findUser.update(request, encodedPassword, request.getImages());
@@ -126,7 +128,7 @@ public class UserService {
     }
 
     public User findById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        return userRepository.findById(userId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
     }
 
     public Optional<User> findByEmail(String email) {
