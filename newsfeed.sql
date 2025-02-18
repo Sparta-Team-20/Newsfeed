@@ -2,7 +2,7 @@ CREATE TABLE users
 (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     email       VARCHAR(40) NOT NULL,
-    password    VARCHAR(20) NOT NULL,
+    password    TEXT        NOT NULL,
     name        VARCHAR(20) NOT NULL,
     created_at  DATETIME    NOT NULL,
     modified_at DATETIME    NOT NULL,
