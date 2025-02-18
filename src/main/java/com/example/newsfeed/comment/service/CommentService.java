@@ -9,6 +9,8 @@ import com.example.newsfeed.comment.dto.response.CommentSaveResponseDto;
 import com.example.newsfeed.comment.dto.response.CommentUpdateResponseDto;
 import com.example.newsfeed.comment.entity.Comment;
 import com.example.newsfeed.comment.repository.CommentRepository;
+import com.example.newsfeed.common.exception.CustomExceptionHandler;
+import com.example.newsfeed.common.exception.ErrorCode;
 import com.example.newsfeed.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,7 @@ public class CommentService {
     @Transactional
     public CommentSaveResponseDto save(Long boardId, CommentSaveRequestDto dto, User loginUser) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+                .orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD)
         );
 
         Comment comment = new Comment(dto.getContent(), board, loginUser);
@@ -47,7 +49,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public CommentResponseDto findOne(Long boardId, Long id) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+                .orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD)
         );
 
         Comment comment = commentRepository.findByIdAndBoardId(board.getId(), id);
@@ -65,7 +67,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentResponseDto> findAll(Long boardId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(()-> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+                .orElseThrow(()-> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD)
         );
 
         List<Comment> comments = commentRepository.findAllByBoardId(board.getId());
@@ -83,11 +85,11 @@ public class CommentService {
     @Transactional
     public CommentUpdateResponseDto update(Long id, CommentUpdateRequestDto dto ,User loginUser) {
         Comment comment = commentRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 ID의 댓글을 찾을 수 없습니다. ID = " + id)
+                () -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_COMMENT)
         );
 
         if (!comment.getUser().equals(loginUser)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "댓글 작성자만 수정할 수 있습니다.");
+            throw new CustomExceptionHandler(ErrorCode.INVALID_USER_UPDATE_COMMENT);
         }
 
         comment.updateContent(dto.getContent());
@@ -104,11 +106,11 @@ public class CommentService {
     @Transactional
     public void delete(Long id, User loginUser) {
         Comment comment = commentRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 ID의 댓글을 찾을 수 없습니다. ID = " + id)
+                () -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_COMMENT)
         );
 
         if (!comment.getUser().equals(loginUser)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "댓글 작성자만 삭제할 수 있습니다.");
+            throw new CustomExceptionHandler(ErrorCode.INVALID_USER_DELETE_COMMENT);
         }
 
         commentRepository.deleteById(comment.getId());
