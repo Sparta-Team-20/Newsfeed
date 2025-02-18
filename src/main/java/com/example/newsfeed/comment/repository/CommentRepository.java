@@ -23,6 +23,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT c FROM Comment c JOIN FETCH c.user WHERE c.board.id = :boardId")
     List<Comment> findAllByBoardIdAndUser(Long boardId);
 
+    @Query("select new com.example.newsfeed.comment.dto.CommentCountDto(c.board.id, count(c)) " +
+            "from Comment c " +
+            "where c.board.id in :scheduleIds " +
+            "group by c.board.id")
     List<CommentCountDto> countByBoardIds(List<Long> boardIds);
 
 }

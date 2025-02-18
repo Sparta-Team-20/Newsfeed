@@ -1,19 +1,28 @@
 package com.example.newsfeed.board.controller;
 
-import com.example.newsfeed.common.consts.Const;
 import com.example.newsfeed.board.dto.request.BoardSaveRequestDto;
 import com.example.newsfeed.board.dto.request.BoardUpdateRequestDto;
-import com.example.newsfeed.board.dto.response.BoardPageResponseDto;
 import com.example.newsfeed.board.dto.response.BoardFindAllResponseDto;
+import com.example.newsfeed.board.dto.response.BoardFindOneResponseDto;
+import com.example.newsfeed.board.dto.response.BoardPageResponseDto;
 import com.example.newsfeed.board.dto.response.BoardSaveResponseDto;
 import com.example.newsfeed.board.dto.response.BoardUpdateResponseDto;
 import com.example.newsfeed.board.service.BoardService;
+import com.example.newsfeed.common.consts.Const;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,7 +48,7 @@ public class BoardController {
 
     // 게시물 단건 조회
     @GetMapping("/boards/{id}")
-    public ResponseEntity<BoardFindAllResponseDto> findOne(@PathVariable Long id) {
+    public ResponseEntity<BoardFindOneResponseDto> findOne(@PathVariable Long id) {
         return ResponseEntity.ok(boardService.findOne(id));
     }
 
