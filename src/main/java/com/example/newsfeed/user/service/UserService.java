@@ -6,7 +6,6 @@ import com.example.newsfeed.common.exception.ErrorCode;
 import com.example.newsfeed.follow.dto.FollowCountDto;
 import com.example.newsfeed.follow.entity.Follow;
 import com.example.newsfeed.follow.service.FollowService;
-import com.example.newsfeed.image.dto.request.ImageRequestDto;
 import com.example.newsfeed.image.dto.response.ImageResponseDto;
 import com.example.newsfeed.image.entity.UserImage;
 import com.example.newsfeed.image.service.UserImageService;
@@ -174,10 +173,11 @@ public class UserService {
     }
 
     @Transactional
-    public UserUpdateResponseDto addImage(Long userId, ImageRequestDto request) {
+    public UserUpdateResponseDto addImage(Long userId, String image) {
         User findUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        userImageService.save(UserImage.toEntity(findUser, request));
+
+        userImageService.save(UserImage.toEntity(findUser, image));
         List<ImageResponseDto> images = userImageService.findAllByUserId(userId)
                 .stream().map(ImageResponseDto::of).toList();
         return UserUpdateResponseDto.of(findUser, images);

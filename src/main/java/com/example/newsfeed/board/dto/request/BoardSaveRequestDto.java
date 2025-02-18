@@ -1,6 +1,5 @@
 package com.example.newsfeed.board.dto.request;
 
-import com.example.newsfeed.image.entity.BoardImage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -18,5 +17,5 @@ public class BoardSaveRequestDto {
     @NotBlank(message = "내용은 필수 입력값입니다.")
     private String contents;
 
-    private List<BoardImage> images;
+    private List<String> images;
 }

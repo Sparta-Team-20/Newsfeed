@@ -1,7 +1,7 @@
 package com.example.newsfeed.image.entity;
 
 import com.example.newsfeed.common.entity.BaseEntity;
-import com.example.newsfeed.image.dto.request.ImageRequestDto;
+import com.example.newsfeed.common.utils.FileUtils;
 import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -32,8 +32,9 @@ public class UserImage extends BaseEntity {
         this.user = user;
     }
 
-    public static UserImage toEntity(User user, ImageRequestDto images) {
-        return new UserImage(images.getImageUrl(), images.getImageType(), user);
+    public static UserImage toEntity(User user, String images) {
+        String[] splitImage = FileUtils.splitFileName(images);
+        return new UserImage(splitImage[0], splitImage[1], user);
     }
 
     public static UserImage toEntity(User user, UserImage images) {

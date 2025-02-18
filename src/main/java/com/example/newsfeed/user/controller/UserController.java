@@ -1,6 +1,5 @@
 package com.example.newsfeed.user.controller;
 
-import com.example.newsfeed.image.dto.request.ImageRequestDto;
 import com.example.newsfeed.user.dto.request.UserSaveRequestDto;
 import com.example.newsfeed.user.dto.request.UserUpdateRequestDto;
 import com.example.newsfeed.user.dto.response.UserFindAllResponseDto;
@@ -71,7 +70,7 @@ public class UserController {
 
     @PutMapping("/users/me/addImage")
     public ResponseEntity<UserUpdateResponseDto> addImage(HttpServletRequest request,
-                                                          @RequestBody ImageRequestDto requestDto) {
+                                                          @RequestBody String requestDto) {
         Long userId = (Long) request.getAttribute("LOGIN_USER");
         UserUpdateResponseDto response = userService.addImage(userId, requestDto);
         return new ResponseEntity<>(response, HttpStatus.OK);

@@ -30,10 +30,10 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String generateToken(Long userId, String email, String name) {
+    public String[] generateToken(Long userId, String email, String name) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
+        return new String[]{BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(String.valueOf(userId))
                         .claim("email", email)
@@ -41,7 +41,7 @@ public class JwtUtil {
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+                        .compact(), new Date(date.getTime() + TOKEN_TIME).toString()};
     }
 
     public String validateToken(String token) {
