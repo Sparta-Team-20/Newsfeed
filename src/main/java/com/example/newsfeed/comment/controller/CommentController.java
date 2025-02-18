@@ -7,6 +7,7 @@ import com.example.newsfeed.comment.dto.response.CommentSaveResponseDto;
 import com.example.newsfeed.comment.dto.response.CommentUpdateResponseDto;
 import com.example.newsfeed.comment.service.CommentService;
 import com.example.newsfeed.user.entity.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class CommentController {
     @PostMapping("/boards/{boardId}/comments")
     public ResponseEntity<CommentSaveResponseDto> save(
             @PathVariable Long boardId,
-            @RequestBody CommentSaveRequestDto dto,
+            @RequestBody @Valid CommentSaveRequestDto dto,
             @SessionAttribute(name = "loginUser", required = false) User loginUser
     ) {
         if (loginUser == null) {
@@ -50,7 +51,7 @@ public class CommentController {
     @PatchMapping("/comments/{id}")
     public ResponseEntity<CommentUpdateResponseDto> update(
             @PathVariable Long id,
-            @RequestBody CommentUpdateRequestDto dto,
+            @RequestBody @Valid CommentUpdateRequestDto dto,
             @SessionAttribute(name = "loginUser", required = false) User loginUser
     ) {
         if (loginUser == null) {

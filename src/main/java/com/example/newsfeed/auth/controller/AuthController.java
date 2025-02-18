@@ -3,6 +3,7 @@ package com.example.newsfeed.auth.controller;
 import com.example.newsfeed.auth.dto.request.LoginRequestDto;
 import com.example.newsfeed.auth.dto.response.LoginResponseDto;
 import com.example.newsfeed.auth.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,7 @@ public class AuthController {
 
     // 로그인 (JWT 반환)
     @PostMapping("/auths/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto request) {
         String token = authService.login(request.getEmail(), request.getPassword());
         return ResponseEntity.ok(new LoginResponseDto(token));
     }
