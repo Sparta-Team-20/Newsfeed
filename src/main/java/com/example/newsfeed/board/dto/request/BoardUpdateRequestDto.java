@@ -1,19 +1,25 @@
 package com.example.newsfeed.board.dto.request;
 
+import com.example.newsfeed.image.entity.BoardImage;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.Getter;
 
+import static com.example.newsfeed.common.consts.Const.*;
+
 @Getter
 public class BoardUpdateRequestDto {
 
-    @NotBlank(message = "제목은 필수 입력값입니다.")
-    @Size(max = 10, message = "제목은 10글자 이내여야 합니다.")
+    @NotBlank(message = TITLE_NOT_NULL)
+    @Size(max = 20, message = TITLE_SIZE)
     private String title;
 
-    @NotBlank(message = "내용은 필수 입력값입니다.")
+    @NotBlank(message = CONTENTS_NOT_NULL)
+    @Size(max = 200, message = CONTENTS_SIZE)
     private String contents;
 
-    private List<String> images;
+    @NotEmpty(message = IMAGE_NOT_NULL)
+    private List<BoardImage> images;
 }

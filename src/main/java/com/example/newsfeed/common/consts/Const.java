@@ -16,6 +16,7 @@ public abstract class Const {
     public static final String PASSWORD_REQUIREMENT = "비밀번호에는 대소문자 포함 영문, 숫자, 특수문자가 포함되어야 합니다.";
     public static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$";
 
+    public static final String IMAGE_NOT_NULL = "이미지는 필수 입력값입니다.";
     public static final String IMAGE_URL = "이미지는 URL 형식이어야 합니다.";
     public static final String IMAGE_PATTERN = ".*\\.(png|jpg|jpeg|gif)$";
     public static final String IMAGE_REQUIREMENT = "허용된 확장자는 png, jpg, jpeg, gif 입니다.";
@@ -24,6 +25,7 @@ public abstract class Const {
     public static final String TITLE_NOT_NULL = "제목은 필수 값입니다.";
 
     public static final String TODO_CONTENTS_SIZE = "내용은 최대 200자 입니다.";
+    public static final String CONTENTS_SIZE = "내용은 최대 200자 입니다.";
     public static final String CONTENTS_NOT_NULL = "내용은 필수 값입니다.";
 
     public static final String COMMENT_CONTENTS_SIZE = "댓글은 최소 1자에서 최대 50자 입니다.";
