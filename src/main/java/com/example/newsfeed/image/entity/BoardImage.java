@@ -12,9 +12,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+
+import static com.example.newsfeed.common.consts.Const.*;
 
 @Getter
 @Entity
@@ -26,6 +29,7 @@ public class BoardImage {
     private Long id;
 
     @Column(name = "image_url", nullable = false)
+    @Pattern(regexp = IMAGE_PATTERN, message = IMAGE_REQUIREMENT)
     private String imageUrl;
 
     @Column(name = "image_type", nullable = false)
