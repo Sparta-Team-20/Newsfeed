@@ -89,14 +89,18 @@ public class UserService {
         User targetUser = userRepository.findUsersById(targetUserId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_FOLLOW_USER));
 
-        boolean isFollowing = user.getFollowings().stream()
-                .anyMatch(follow -> follow.getFollowing().getId().equals(targetUserId));
+        Optional<Follow> existingFollow = followService.findByFollowerIdAndFollowingId(userId, targetUserId);
 
-        if (isFollowing) {
-            user.getFollowings().removeIf(follow -> follow.getFollowing().getId().equals(targetUserId));
-            targetUser.getFollowers().removeIf(follow -> follow.getFollower().getId().equals(userId));
+
+        if (existingFollow.isPresent()) {
+            Follow followToRemove = existingFollow.get();
+            user.getFollowings().remove(followToRemove);
+            targetUser.getFollowers().remove(followToRemove);
+            followService.delete(followToRemove);
+            followService.flush();
         } else {
             Follow follow = Follow.toEntity(user, targetUser);
+            followService.save(follow);
             user.getFollowings().add(follow);
             targetUser.getFollowers().add(follow);
         }
