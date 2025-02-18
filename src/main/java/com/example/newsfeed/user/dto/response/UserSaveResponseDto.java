@@ -1,7 +1,7 @@
 package com.example.newsfeed.user.dto.response;
 
 
-import com.example.newsfeed.image.dto.response.UserImageResponseDto;
+import com.example.newsfeed.image.dto.response.ImageResponseDto;
 import com.example.newsfeed.user.entity.User;
 import lombok.Getter;
 
@@ -14,11 +14,11 @@ public class UserSaveResponseDto {
     private final Long id;
     private final String email;
     private final String name;
-    private final List<UserImageResponseDto> images;
+    private final List<ImageResponseDto> images;
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
 
-    private UserSaveResponseDto(Long id, String email, String name, List<UserImageResponseDto> images,
+    private UserSaveResponseDto(Long id, String email, String name, List<ImageResponseDto> images,
                                 LocalDateTime createdAt, LocalDateTime modifiedAt) {
         this.id = id;
         this.email = email;
@@ -28,7 +28,7 @@ public class UserSaveResponseDto {
         this.modifiedAt = modifiedAt;
     }
 
-    public static UserSaveResponseDto of(User user, List<UserImageResponseDto> images) {
+    public static UserSaveResponseDto of(User user, List<ImageResponseDto> images) {
         return new UserSaveResponseDto(user.getId(), user.getEmail(), user.getName(), images, user.getCreatedAt(),
                 user.getModifiedAt());
     }

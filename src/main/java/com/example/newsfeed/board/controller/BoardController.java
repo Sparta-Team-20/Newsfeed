@@ -4,7 +4,7 @@ import com.example.newsfeed.common.consts.Const;
 import com.example.newsfeed.board.dto.request.BoardSaveRequestDto;
 import com.example.newsfeed.board.dto.request.BoardUpdateRequestDto;
 import com.example.newsfeed.board.dto.response.BoardPageResponseDto;
-import com.example.newsfeed.board.dto.response.BoardResponseDto;
+import com.example.newsfeed.board.dto.response.BoardFindAllResponseDto;
 import com.example.newsfeed.board.dto.response.BoardSaveResponseDto;
 import com.example.newsfeed.board.dto.response.BoardUpdateResponseDto;
 import com.example.newsfeed.board.service.BoardService;
@@ -33,13 +33,13 @@ public class BoardController {
 
     // 게시물 전체 조회
     @GetMapping("/boards")
-    public ResponseEntity<List<BoardResponseDto>> findAll() {
+    public ResponseEntity<List<BoardFindAllResponseDto>> findAll() {
         return ResponseEntity.ok(boardService.findAll());
     }
 
     // 게시물 단건 조회
     @GetMapping("/boards/{id}")
-    public ResponseEntity<BoardResponseDto> findOne(@PathVariable Long id) {
+    public ResponseEntity<BoardFindAllResponseDto> findOne(@PathVariable Long id) {
         return ResponseEntity.ok(boardService.findOne(id));
     }
 

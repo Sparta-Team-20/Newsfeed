@@ -36,7 +36,7 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public ResponseEntity<UserFindOneResponseDto> findOne(@PathVariable Long id) {
-        UserFindOneResponseDto response = userService.findById(id);
+        UserFindOneResponseDto response = userService.findOne(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

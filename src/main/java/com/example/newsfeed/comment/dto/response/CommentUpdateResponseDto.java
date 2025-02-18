@@ -1,5 +1,6 @@
 package com.example.newsfeed.comment.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,6 +11,6 @@ public class CommentUpdateResponseDto {
     private final Long userId;
     private final Long boardId;
     private final String content;
-    private final String createAt;
-    private final String modifiedAt;
+    private final LocalDateTime createAt;
+    private final LocalDateTime modifiedAt;
 }

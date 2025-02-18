@@ -20,5 +20,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "followings.following",
             "images"
     })
-    Optional<User> findById(Long id);
+    Optional<User> findByIdWithAll(Long id);
 }
