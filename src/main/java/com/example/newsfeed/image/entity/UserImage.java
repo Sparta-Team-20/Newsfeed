@@ -1,5 +1,6 @@
 package com.example.newsfeed.image.entity;
 
+import com.example.newsfeed.common.entity.BaseEntity;
 import com.example.newsfeed.image.dto.request.ImageRequestDto;
 import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Table(name = "users_image")
-public class UserImage {
+public class UserImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

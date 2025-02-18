@@ -1,19 +1,14 @@
 package com.example.newsfeed.user.entity;
 
 import com.example.newsfeed.common.entity.BaseEntity;
-import com.example.newsfeed.image.entity.UserImage;
 import com.example.newsfeed.user.dto.request.UserSaveRequestDto;
 import com.example.newsfeed.user.dto.request.UserUpdateRequestDto;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,9 +28,6 @@ public class User extends BaseEntity {
     private String password;
 
     private String name;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserImage> images = new ArrayList<>();
 
     @Column(name = "is_delete")
     private boolean isDeleted;
@@ -58,13 +50,5 @@ public class User extends BaseEntity {
 
     public void delete() {
         this.isDeleted = true;
-    }
-
-    public UserImage getFirstImage() {
-        return this.getImages().isEmpty() ? new UserImage("none", "png", this) : this.getImages().get(0);
-    }
-
-    public User(Long id) {
-        this.id = id;
     }
 }

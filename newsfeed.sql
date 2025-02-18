@@ -2,7 +2,7 @@ CREATE TABLE users
 (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     email       VARCHAR(40) NOT NULL,
-    password    VARCHAR(20) NOT NULL,
+    password    TEXT NOT NULL,
     name        VARCHAR(20) NOT NULL,
     created_at  DATETIME    NOT NULL,
     modified_at DATETIME    NOT NULL,
@@ -15,6 +15,8 @@ CREATE TABLE users_image
     user_id    BIGINT NOT NULL,
     image_url  TEXT   NOT NULL,
     image_type TEXT   NOT NULL,
+    created_at  DATETIME NOT NULL,
+    modified_at DATETIME NOT NULL,
     CONSTRAINT fk_image_user FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
@@ -24,7 +26,6 @@ CREATE TABLE follows
     follower    BIGINT   NOT NULL,
     following   BIGINT   NOT NULL,
     created_at  DATETIME NOT NULL,
-    modified_at DATETIME NOT NULL,
     CONSTRAINT fk_follower FOREIGN KEY (follower) REFERENCES users (id),
     CONSTRAINT fk_following FOREIGN KEY (following) REFERENCES users (id)
 );
@@ -46,6 +47,8 @@ CREATE TABLE boards_image
     board_id   BIGINT NOT NULL,
     image_url  TEXT   NOT NULL,
     image_type TEXT   NOT NULL,
+    created_at  DATETIME NOT NULL,
+    modified_at DATETIME NOT NULL,
     CONSTRAINT fk_image_board FOREIGN KEY (board_id) REFERENCES boards (id)
 );
 

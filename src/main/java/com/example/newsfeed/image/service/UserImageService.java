@@ -28,4 +28,12 @@ public class UserImageService {
     public Optional<UserImage> findById(Long imageId) {
         return userImageRepository.findById(imageId);
     }
+
+    public List<UserImage> findLatestImagesPerUser(List<Long> userId) {
+        return userImageRepository.findLatestImagesPerUser(userId);
+    }
+
+    public List<UserImage> findAllByUserId(Long id){
+        return userImageRepository.findAllByUserId(id);
+    }
 }
