@@ -7,7 +7,7 @@ import lombok.Getter;
 import org.hibernate.validator.constraints.URL;
 
 @Getter
-public class ImageRequestDto {
+public class UserImageRequestDto {
 
     @NotEmpty
     @URL(message = Const.IMAGE_URL)
@@ -16,7 +16,7 @@ public class ImageRequestDto {
     @Pattern(regexp = Const.IMAGE_PATTERN, message = Const.IMAGE_REQUIREMENT)
     private final String imageType;
 
-    public ImageRequestDto(String imageUrl, String imageType) {
+    public UserImageRequestDto(String imageUrl, String imageType) {
         this.imageUrl = imageUrl;
         this.imageType = imageType;
     }
