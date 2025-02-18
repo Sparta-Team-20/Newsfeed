@@ -1,5 +1,8 @@
 package com.example.newsfeed.user.service;
 
+import com.example.newsfeed.common.config.PasswordEncoder;
+import com.example.newsfeed.common.exception.CustomExceptionHandler;
+import com.example.newsfeed.common.exception.ErrorCode;
 import com.example.newsfeed.follow.dto.FollowCountDto;
 import com.example.newsfeed.follow.entity.Follow;
 import com.example.newsfeed.follow.service.FollowService;
@@ -18,6 +21,7 @@ import com.example.newsfeed.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,15 +34,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserImageService userImageService;
     private final FollowService followService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserSaveResponseDto save(UserSaveRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
+            throw new CustomExceptionHandler(ErrorCode.ALREADY_EXIST_EMAIL);
         }
 
-        //TODO : 비밀번호 암호화
-        String encodedPassword = "";
-        User user = User.toEntity(request, request.getPassword());
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        User user = User.toEntity(request, encodedPassword);
         UserImage userImage = UserImage.toEntity(user, request.getImage());
         userRepository.save(user);
         userImageService.save(userImage);
@@ -64,8 +68,8 @@ public class UserService {
     }
 
     public UserFindOneResponseDto findOne(Long id) {
-        User user = userRepository.findByIdWithAll(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저는 존재하지 않습니다."));
+        User user = userRepository.findUsersById(id)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
         List<ImageResponseDto> images = user.getImages().stream()
                 .map(ImageResponseDto::of).toList();
@@ -79,10 +83,10 @@ public class UserService {
 
     @Transactional
     public UserFindOneResponseDto follow(Long userId, Long targetUserId) {
-        User user = userRepository.findByIdWithAll(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        User targetUser = userRepository.findByIdWithAll(targetUserId)
-                .orElseThrow(() -> new IllegalArgumentException("팔로우할 사용자를 찾을 수 없습니다."));
+        User user = userRepository.findUsersById(userId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        User targetUser = userRepository.findUsersById(targetUserId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_FOLLOW_USER));
 
         boolean isFollowing = user.getFollowings().stream()
                 .anyMatch(follow -> follow.getFollowing().getId().equals(targetUserId));
@@ -108,11 +112,10 @@ public class UserService {
 
     @Transactional
     public UserUpdateResponseDto update(Long userId, UserUpdateRequestDto request) {
-        User findUser = userRepository.findByIdWithAll(userId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
-        // TODO : 비밀번호 암호화
-        String encodedPassword = "";
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
         findUser.update(request, encodedPassword, request.getImages());
         List<ImageResponseDto> images = new ArrayList<>();
         return UserUpdateResponseDto.of(findUser, images);
@@ -120,12 +123,15 @@ public class UserService {
 
     @Transactional
     public void delete(Long userId) {
-        User findUser = userRepository.findByIdWithAll(userId).orElseThrow();
+        User findUser = userRepository.findById(userId).orElseThrow();
         findUser.delete();
     }
 
     public User findById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        return userRepository.findById(userId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
     }
 
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }

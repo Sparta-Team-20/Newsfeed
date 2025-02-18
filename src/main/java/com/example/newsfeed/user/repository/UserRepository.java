@@ -20,5 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "followings.following",
             "images"
     })
-    Optional<User> findByIdWithAll(Long id);
+    Optional<User> findUsersById(Long id);
+
+    Optional<User> findByEmail(String email);
 }

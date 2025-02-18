@@ -22,7 +22,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/users")
+    @PostMapping("/users/register")
     public ResponseEntity<UserSaveResponseDto> save(@RequestBody UserSaveRequestDto request) {
         UserSaveResponseDto response = userService.save(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

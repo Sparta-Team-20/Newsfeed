@@ -13,6 +13,8 @@ import com.example.newsfeed.comment.dto.CommentCountDto;
 import com.example.newsfeed.comment.dto.response.CommentInfoResponseDto;
 import com.example.newsfeed.comment.entity.Comment;
 import com.example.newsfeed.comment.repository.CommentRepository;
+import com.example.newsfeed.common.exception.CustomExceptionHandler;
+import com.example.newsfeed.common.exception.ErrorCode;
 import com.example.newsfeed.image.dto.response.ImageResponseDto;
 import com.example.newsfeed.image.entity.BoardImage;
 import com.example.newsfeed.image.service.BoardImageService;
@@ -71,7 +73,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardFindOneResponseDto findOne(Long id) {
         Board board = boardRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD));
 
         List<Comment> comments = commentRepository.findAllByBoardIdAndUser(board.getId());
         return BoardFindOneResponseDto.of(board, comments.stream().map(CommentInfoResponseDto::of).toList());
@@ -81,13 +83,13 @@ public class BoardService {
     @Transactional
     public BoardUpdateResponseDto update(Long boardId, Long userId, BoardUpdateRequestDto dto) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD));
         if (!userId.equals(board.getUser().getId())) {
-            throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
+            throw new CustomExceptionHandler(ErrorCode.INVALID_USER_UPDATE_BOARD);
         }
         board.update(dto.getTitle(), dto.getContents(), dto.getImages());
         board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD));
         return BoardUpdateResponseDto.of(board);
     }
 
@@ -95,9 +97,9 @@ public class BoardService {
     @Transactional
     public void delete(Long boardId, Long userId) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD));
         if (!userId.equals(board.getUser().getId())) {
-            throw new IllegalArgumentException("본인이 작성한 스케줄만 삭제할 수 있습니다.");
+            throw new CustomExceptionHandler(ErrorCode.INVALID_USER_DELETE_BOARD);
         }
         boardRepository.delete(board);
     }
