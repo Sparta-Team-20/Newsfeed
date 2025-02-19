@@ -1,7 +1,6 @@
 package com.example.newsfeed.common.config;
 
 
-import com.example.newsfeed.common.exception.CustomExceptionHandler;
 import com.example.newsfeed.common.exception.ErrorCode;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -10,12 +9,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.PatternMatchUtils;
 
-@Slf4j
 @RequiredArgsConstructor
 public class JwtFilter implements Filter {
 
@@ -32,6 +30,7 @@ public class JwtFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         String requestURI = httpRequest.getRequestURI();
 
@@ -44,15 +43,17 @@ public class JwtFilter implements Filter {
         String token = resolveToken(httpRequest);
 
         if (token == null) {
-            throw new CustomExceptionHandler(ErrorCode.NOT_LOGIN);
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, ErrorCode.NOT_LOGIN.getMessage());
+            return;
         }
 
-        if (jwtUtil.validateToken(token) != null) {
-            Long userId = jwtUtil.extractUserId(token);
-            request.setAttribute("LOGIN_USER", userId);
-        } else {
-            throw new CustomExceptionHandler(ErrorCode.INVALID_TOKEN);
+        if (!jwtUtil.validateToken(token)) {
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, ErrorCode.INVALID_TOKEN.getMessage());
+            return;
         }
+
+        Long userId = jwtUtil.extractUserId(token);
+        request.setAttribute("LOGIN_USER", userId);
 
         chain.doFilter(request, response);
     }

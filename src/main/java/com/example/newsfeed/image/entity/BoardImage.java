@@ -1,5 +1,8 @@
 package com.example.newsfeed.image.entity;
 
+import static com.example.newsfeed.common.consts.Const.IMAGE_PATTERN;
+import static com.example.newsfeed.common.consts.Const.IMAGE_REQUIREMENT;
+
 import com.example.newsfeed.board.entity.Board;
 import com.example.newsfeed.common.utils.FileUtils;
 import jakarta.persistence.Column;
@@ -15,8 +18,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static com.example.newsfeed.common.consts.Const.*;
-
 @Getter
 @Entity
 @NoArgsConstructor
@@ -27,10 +28,10 @@ public class BoardImage {
     private Long id;
 
     @Column(name = "image_url", nullable = false)
-    @Pattern(regexp = IMAGE_PATTERN, message = IMAGE_REQUIREMENT)
     private String imageUrl;
 
     @Column(name = "image_type", nullable = false)
+    @Pattern(regexp = IMAGE_PATTERN, message = IMAGE_REQUIREMENT)
     private String imageType;
 
     @ManyToOne(fetch = FetchType.LAZY)

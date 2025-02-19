@@ -1,8 +1,6 @@
-package com.example.newsfeed.common.config;
+package com.example.newsfeed.common.exception;
 
 
-import com.example.newsfeed.common.exception.CustomExceptionHandler;
-import com.example.newsfeed.common.exception.ErrorCode;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -14,13 +12,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    
-    @ExceptionHandler({CustomExceptionHandler.class})
+
+    @ExceptionHandler(CustomExceptionHandler.class)
     private ResponseEntity handleCustomException(CustomExceptionHandler ex) {
         return getErrorResponse(ex.getErrorCode(), ex.getErrorCode().getMessage());
     }
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     private ResponseEntity handleValidationException(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult()
                 .getFieldErrors()

@@ -1,13 +1,16 @@
 package com.example.newsfeed.board.dto.request;
 
-import com.example.newsfeed.image.entity.BoardImage;
+import static com.example.newsfeed.common.consts.Const.CONTENTS_NOT_NULL;
+import static com.example.newsfeed.common.consts.Const.CONTENTS_SIZE;
+import static com.example.newsfeed.common.consts.Const.IMAGE_NOT_NULL;
+import static com.example.newsfeed.common.consts.Const.TITLE_NOT_NULL;
+import static com.example.newsfeed.common.consts.Const.TITLE_SIZE;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.Getter;
-
-import static com.example.newsfeed.common.consts.Const.*;
 
 @Getter
 public class BoardUpdateRequestDto {
@@ -21,5 +24,5 @@ public class BoardUpdateRequestDto {
     private String contents;
 
     @NotEmpty(message = IMAGE_NOT_NULL)
-    private List<BoardImage> images;
+    private List<String> images;
 }
