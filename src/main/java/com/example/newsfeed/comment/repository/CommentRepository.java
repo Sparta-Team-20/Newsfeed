@@ -2,10 +2,11 @@ package com.example.newsfeed.comment.repository;
 
 import com.example.newsfeed.comment.dto.CommentCountDto;
 import com.example.newsfeed.comment.entity.Comment;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
@@ -29,4 +30,15 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "group by c.board.id")
     List<CommentCountDto> countByBoardIds(List<Long> boardIds);
 
+    List<Comment> findAllByUserId(Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Comment c SET c.isDeleted = true WHERE c.user.id = :id")
+    int softDeleteByUserId(Long id);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Comment c SET c.isDeleted = true WHERE c.board.id = :id")
+    int softDeleteByBoardId(Long id);
 }
