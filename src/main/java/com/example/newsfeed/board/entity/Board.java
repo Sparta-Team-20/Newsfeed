@@ -51,7 +51,8 @@ public class Board extends BaseEntity {
     public void update(String title, String contents, List<BoardImage> images) {
         this.title = title;
         this.contents = contents;
-        this.images = images;
+        this.images.clear();
+        this.images.addAll(images);
     }
 
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Comment findByIdAndBoardId(Long boardId, Long id);
+    Comment findByIdAndBoardId(Long id, Long BoardId);
 
     /**
      * 특정한 게시글의 모든 댓글을 리스트 형식으로 반환하는 메서드입니다.
@@ -25,7 +25,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("select new com.example.newsfeed.comment.dto.CommentCountDto(c.board.id, count(c)) " +
             "from Comment c " +
-            "where c.board.id in :scheduleIds " +
+            "where c.board.id in :boardIds " +
             "group by c.board.id")
     List<CommentCountDto> countByBoardIds(List<Long> boardIds);
 

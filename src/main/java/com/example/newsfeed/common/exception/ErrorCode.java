@@ -25,7 +25,11 @@ public enum ErrorCode {
     NOT_LOGIN(401, "로그인 상태가 아닙니다."),
     NOT_MATCH_EMAIL(401, "해당 이메일을 찾을 수 없습니다."),
     NOT_MATCH_PASSWORD(401, "비밀번호가 일치하지 않습니다."),
-    PASSWORD_NOT_CORRESPOND_REQUIREMENT(400, "비밀번호가 요구 조건에 부합하지 않습니다.");
+    PASSWORD_NOT_CORRESPOND_REQUIREMENT(400, "비밀번호가 요구 조건에 부합하지 않습니다."),
+    EXPIRED_TOKEN(401, "토큰이 만료되었습니다."),
+    UNSUPPORTED_TOKEN(401, "지원되지 않는 토큰 형식입니다."),
+    INVALID_SIGNATURE(401, "잘못된 서명입니다."),
+    EMPTY_TOKEN(400, "토큰이 제공되지 않았습니다.");
 
     private final int status;
     private final String message;

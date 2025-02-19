@@ -1,18 +1,14 @@
 package com.example.newsfeed.common.utils;
 
-import java.util.UUID;
-import org.springframework.web.multipart.MultipartFile;
-
 public class FileUtils {
 
-    public static String[] splitFileName(MultipartFile file) {
-        if (file == null || file.getOriginalFilename() == null) {
+    public static String[] splitFileName(String file) {
+        if (file == null) {
             return new String[]{"", ""};
         }
 
-        String originalFilename = file.getOriginalFilename();
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String newFileName = UUID.randomUUID() + extension;
+        String extension = file.substring(file.lastIndexOf("."));
+        String newFileName = file.substring(0, file.lastIndexOf("."));
 
         return new String[]{newFileName, extension};
     }
