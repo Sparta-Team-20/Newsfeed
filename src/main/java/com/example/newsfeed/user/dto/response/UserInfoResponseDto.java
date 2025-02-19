@@ -1,9 +1,7 @@
 package com.example.newsfeed.user.dto.response;
 
 import com.example.newsfeed.image.dto.response.ImageResponseDto;
-import com.example.newsfeed.image.entity.UserImage;
 import com.example.newsfeed.user.entity.User;
-import java.util.List;
 import lombok.Getter;
 
 @Getter
@@ -19,11 +17,7 @@ public class UserInfoResponseDto {
         this.image = image;
     }
 
-    public static UserInfoResponseDto of(User user) {
-        List<UserImage> images = user.getImages();
-        ImageResponseDto imageDto = (images != null && !images.isEmpty())
-                ? ImageResponseDto.of(images.get(0))
-                : null;
+    public static UserInfoResponseDto of(User user, ImageResponseDto imageDto) {
         return new UserInfoResponseDto(user.getId(), user.getName(), imageDto);
     }
 }

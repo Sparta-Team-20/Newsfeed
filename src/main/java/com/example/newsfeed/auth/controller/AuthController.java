@@ -18,16 +18,9 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // 로그인 (JWT 반환)
     @PostMapping("/auths/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto request) {
-        String token = authService.login(request.getEmail(), request.getPassword());
-        return ResponseEntity.ok(new LoginResponseDto(token));
-    }
-
-    // 로그아웃 (JWT는 클라이언트에서 삭제)
-    @PostMapping("/auths/logout")
-    public ResponseEntity<?> logout() {
-        return ResponseEntity.ok("로그아웃 되었습니다.");
+    public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid LoginRequestDto request) {
+        LoginResponseDto token = authService.login(request.getEmail(), request.getPassword());
+        return ResponseEntity.ok(token);
     }
 }

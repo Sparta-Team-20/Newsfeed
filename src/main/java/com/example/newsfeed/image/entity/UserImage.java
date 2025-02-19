@@ -1,6 +1,7 @@
 package com.example.newsfeed.image.entity;
 
-import com.example.newsfeed.image.dto.request.ImageRequestDto;
+import com.example.newsfeed.common.entity.BaseEntity;
+import com.example.newsfeed.common.utils.FileUtils;
 import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @Table(name = "users_image")
-public class UserImage {
+public class UserImage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,7 +32,12 @@ public class UserImage {
         this.user = user;
     }
 
-    public static UserImage toEntity(User user, ImageRequestDto images) {
+    public static UserImage toEntity(User user, String images) {
+        String[] splitImage = FileUtils.splitFileName(images);
+        return new UserImage(splitImage[0], splitImage[1], user);
+    }
+
+    public static UserImage toEntity(User user, UserImage images) {
         return new UserImage(images.getImageUrl(), images.getImageType(), user);
     }
 }
