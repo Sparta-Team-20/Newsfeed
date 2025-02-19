@@ -6,11 +6,13 @@ import com.example.newsfeed.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Entity
 @NoArgsConstructor
 @Table(name = "comments")
+@Where(clause = "is_deleted = false")
 public class Comment extends BaseEntity {
 
     @Id
@@ -27,6 +29,9 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
+
     public Comment(String content, Board board, User user) {
         this.content = content;
         this.board = board;
@@ -35,5 +40,9 @@ public class Comment extends BaseEntity {
 
     public void update(String content) {
         this.content = content;
+    }
+
+    public void delete() {
+        isDeleted = true;
     }
 }
