@@ -26,14 +26,14 @@ public class FileUtils {
         return userImage.getImageUrl() + userImage.getImageType();
     }
 
-    public static String joinFileName(BoardImage userImage) {
-        if (userImage.getImageUrl() == null || userImage.getImageUrl().isEmpty()) {
-            return userImage.getImageType();
+    public static String joinFileName(BoardImage boardImage) {
+        if (boardImage.getImageUrl() == null || boardImage.getImageUrl().isEmpty()) {
+            return boardImage.getImageType();
         }
-        if (userImage.getImageType() == null || userImage.getImageType().isEmpty()) {
-            return userImage.getImageUrl();
+        if (boardImage.getImageType() == null || boardImage.getImageType().isEmpty()) {
+            return boardImage.getImageUrl();
         }
-        return userImage.getImageUrl() + userImage.getImageType();
+        return boardImage.getImageUrl() + boardImage.getImageType();
     }
 
 }

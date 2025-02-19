@@ -36,47 +36,72 @@
 
 ```mermaid
 erDiagram
-    Users {
+    users {
         BIGINT id PK
-        VARCHAR(255) email
-        VARCHAR(30) password
+        VARCHAR(40) email
+        TEXT password
         VARCHAR(20) name
-        TEXT image
         DATETIME created_at
         DATETIME modified_at
-        BOOLEAN is_delete
+        BOOLEAN is_deleted
     }
 
-    Boards {
+    users_image {
+        BIGINT id PK
+        BIGINT user_id FK
+        TEXT image_url
+        TEXT image_type
+        DATETIME created_at
+        DATETIME modified_at
+    }
+
+    follows {
+        BIGINT id PK
+        BIGINT follower FK
+        BIGINT following FK
+        DATETIME created_at
+    }
+
+    boards {
         BIGINT id PK
         BIGINT user_id FK
         TEXT title
         TEXT contents
-        TEXT image
+        DATETIME created_at
+        DATETIME modified_at
+        BOOLEAN is_deleted
+    }
+
+    boards_image {
+        BIGINT id PK
+        BIGINT board_id FK
+        TEXT image_url
+        TEXT image_type
         DATETIME created_at
         DATETIME modified_at
     }
 
-    Comments {
+    comments {
         BIGINT id PK
         BIGINT board_id FK
         BIGINT user_id FK
         TEXT contents
         DATETIME created_at
         DATETIME modified_at
+        BOOLEAN is_deleted
     }
 
-    Follows {
-        BIGINT id PK
-        BIGINT follower FK
-        BIGINT following FK
-        DATETIME createdAt
-    }
+%% 관계 정의
+    users ||--o{ users_image : "1:N"
+    users ||--o{ follows : "1:N"
+    users ||--o{ boards : "1:N"
+    users ||--o{ comments : "1:N"
 
-    Users ||--o{ Boards: "writes"
-    Users ||--o{ Comments: "writes"
-    Boards ||--o{ Comments: "has"
-    Users ||--o{ Follows: "follows"
+    follows ||--|| users : "follower → id"
+    follows ||--|| users : "following → id"
+
+    boards ||--o{ boards_image : "1:N"
+    boards ||--o{ comments : "1:N"
 
 ```
 
@@ -119,3 +144,72 @@ erDiagram
 |      댓글 삭제       | **DELETE**  |      ``/api/v1/comments/{id}``      | Path - id : long<br/>Session - login_user : long      | NONE                    | NONE                                                                                                                                        | `200 OK`    |
 
 #### SQL
+```sql
+CREATE TABLE users
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email       VARCHAR(40) NOT NULL,
+    password    TEXT        NOT NULL,
+    name        VARCHAR(20) NOT NULL,
+    created_at  DATETIME    NOT NULL,
+    modified_at DATETIME    NOT NULL,
+    is_deleted  BOOLEAN     NOT NULL
+);
+
+CREATE TABLE users_image
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id     BIGINT   NOT NULL,
+    image_url   TEXT     NOT NULL,
+    image_type  TEXT     NOT NULL,
+    created_at  DATETIME NOT NULL,
+    modified_at DATETIME NOT NULL,
+    CONSTRAINT fk_image_user FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+CREATE TABLE follows
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    follower   BIGINT   NOT NULL,
+    following  BIGINT   NOT NULL,
+    created_at DATETIME NOT NULL,
+    CONSTRAINT fk_follower FOREIGN KEY (follower) REFERENCES users (id),
+    CONSTRAINT fk_following FOREIGN KEY (following) REFERENCES users (id)
+);
+
+CREATE TABLE boards
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id     BIGINT   NOT NULL,
+    title       TEXT     NOT NULL,
+    contents    TEXT     NOT NULL,
+    created_at  DATETIME NOT NULL,
+    modified_at DATETIME NOT NULL,
+    is_deleted  BOOLEAN  NOT NULL,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+CREATE TABLE boards_image
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id    BIGINT   NOT NULL,
+    image_url   TEXT     NOT NULL,
+    image_type  TEXT     NOT NULL,
+    created_at  DATETIME NOT NULL,
+    modified_at DATETIME NOT NULL,
+    CONSTRAINT fk_image_board FOREIGN KEY (board_id) REFERENCES boards (id)
+);
+
+CREATE TABLE comments
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    board_id    BIGINT   NOT NULL,
+    user_id     BIGINT   NOT NULL,
+    contents    TEXT     NOT NULL,
+    created_at  DATETIME NOT NULL,
+    modified_at DATETIME NOT NULL,
+    is_deleted  BOOLEAN  NOT NULL,
+    CONSTRAINT fk_comments_board FOREIGN KEY (board_id) REFERENCES boards (id),
+    CONSTRAINT fk_comments_user FOREIGN KEY (user_id) REFERENCES users (id)
+);
+```

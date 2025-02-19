@@ -13,7 +13,7 @@ public enum ErrorCode {
     EXPIRED_TOKEN(401, "토큰이 만료되었습니다."),
     INTERNAL_SERVER_ERROR(500, "서버 에러입니다. 잠시 후 다시 시도해 주세요."),
     INVALID_SIGNATURE(401, "잘못된 서명입니다."),
-    INVALID_TODO_UPDATE_COMMENT(401, "할일에 존재하는 댓글만 수정 가능합니다."),
+    INVALID_TODO_UPDATE_COMMENT(401, "게시물에 존재하는 댓글만 수정 가능합니다."),
     INVALID_TOKEN(401, "유효하지 않은 토큰입니다."),
     INVALID_USER_DELETE_BOARD(401, "게시글은 작성자만 삭제 가능합니다."),
     INVALID_USER_DELETE_COMMENT(401, "댓글은 작성자만 삭제 가능합니다."),

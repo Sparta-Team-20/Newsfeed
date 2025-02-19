@@ -52,7 +52,7 @@ public class BoardService {
 
         return BoardSaveResponseDto.of(board, user, imageResponseList);
     }
-    
+
     // 게시물 페이지 조회
     @Transactional(readOnly = true)
     public Page<BoardPageResponseDto> findAllPage(Pageable pageable) {
@@ -66,8 +66,13 @@ public class BoardService {
         Map<Long, Long> commentCountMap = countResults.stream()
                 .collect(Collectors.toMap(CommentCountDto::getBoardId, CommentCountDto::getCount));
 
+        List<BoardImage> boardImages = boardImageService.findAllByBoardIds(boardIds);
+        Map<Long, String> boardImageMap = boardImages.stream().collect(
+                Collectors.toMap(boardImage -> boardImage.getBoard().getId(), FileUtils::joinFileName, (a, b) -> b));
+
         return boardPage.map(
-                board -> BoardPageResponseDto.of(board, commentCountMap.getOrDefault(board.getId(), 0L)));
+                board -> BoardPageResponseDto.of(board, commentCountMap.getOrDefault(board.getId(), 0L),
+                        boardImageMap.get(board.getId())));
     }
 
     // 게시물 단건 조회
@@ -77,6 +82,7 @@ public class BoardService {
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD));
 
         List<Comment> comments = commentRepository.findAllByBoardIdAndUser(board.getId());
+
         return BoardResponseDto.of(board, comments.stream().map(CommentInfoResponseDto::of).toList());
     }
 
