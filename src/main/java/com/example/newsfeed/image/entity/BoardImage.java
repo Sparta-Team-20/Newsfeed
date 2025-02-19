@@ -1,8 +1,10 @@
 package com.example.newsfeed.image.entity;
 
+import static com.example.newsfeed.common.consts.Const.IMAGE_PATTERN;
+import static com.example.newsfeed.common.consts.Const.IMAGE_REQUIREMENT;
+
 import com.example.newsfeed.board.entity.Board;
 import com.example.newsfeed.common.utils.FileUtils;
-import com.example.newsfeed.image.dto.request.ImageRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +17,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import static com.example.newsfeed.common.consts.Const.*;
 
@@ -33,6 +34,7 @@ public class BoardImage {
     private String imageUrl;
 
     @Column(name = "image_type", nullable = false)
+    @Pattern(regexp = IMAGE_PATTERN, message = IMAGE_REQUIREMENT)
     private String imageType;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,12 +47,8 @@ public class BoardImage {
         this.board = board;
     }
 
-    public static BoardImage toEntity(Board board, ImageRequestDto images) {
-        return new BoardImage(images.getImageUrl(), images.getImageType(), board);
-    }
-
-    public static BoardImage toEntity(MultipartFile image, Board board) {
-        String[] file = FileUtils.splitFileName(image);
-        return new BoardImage(file[0], file[1], board);
+    public static BoardImage toEntity(Board board, String images) {
+        String[] splitImages = FileUtils.splitFileName(images);
+        return new BoardImage(splitImages[0], splitImages[1], board);
     }
 }

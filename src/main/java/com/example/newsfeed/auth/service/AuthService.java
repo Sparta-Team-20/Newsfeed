@@ -1,5 +1,6 @@
 package com.example.newsfeed.auth.service;
 
+import com.example.newsfeed.auth.dto.response.LoginResponseDto;
 import com.example.newsfeed.common.config.JwtUtil;
 import com.example.newsfeed.common.config.PasswordEncoder;
 import com.example.newsfeed.common.exception.CustomExceptionHandler;
@@ -17,7 +18,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public String login(String email, String password) {
+    public LoginResponseDto login(String email, String password) {
         User user = userService.findByEmail(email)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_MATCH_EMAIL));
 
@@ -25,9 +26,8 @@ public class AuthService {
             throw new CustomExceptionHandler(ErrorCode.NOT_MATCH_PASSWORD);
         }
 
-        return jwtUtil.generateToken(user.getId(), user.getEmail(), user.getName());
+        String[] token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getName());
+        return LoginResponseDto.of(token[0], token[1]);
     }
 
-    public void logout() {
-    }
 }

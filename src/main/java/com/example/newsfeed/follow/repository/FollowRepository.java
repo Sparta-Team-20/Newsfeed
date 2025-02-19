@@ -3,6 +3,8 @@ package com.example.newsfeed.follow.repository;
 import com.example.newsfeed.follow.dto.FollowCountDto;
 import com.example.newsfeed.follow.entity.Follow;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,5 +23,9 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
     List<Follow> findByFollowerId(Long userId);
 
+    @EntityGraph(attributePaths = {"follower"})
+    @Query("SELECT f FROM Follow f WHERE f.following.id = :userId")
     List<Follow> findByFollowingId(Long userId);
+
+    Optional<Follow> findByFollowerIdAndFollowingId(Long followerId, Long followingId);
 }

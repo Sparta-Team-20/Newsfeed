@@ -1,10 +1,11 @@
 package com.example.newsfeed.common.config;
 
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.security.Key;
@@ -30,32 +31,30 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String generateToken(Long userId, String name, String email) {
+    public String[] generateToken(Long userId, String email, String name) {
         Date date = new Date();
 
-        return BEARER_PREFIX +
+        return new String[]{BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(String.valueOf(userId))
-                        .claim("name", name)
                         .claim("email", email)
+                        .claim("name", name)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date) // 발급일
                         .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+                        .compact(), new Date(date.getTime() + TOKEN_TIME).toString()};
     }
 
-    public String validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
+            Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            return claims.getSubject();
-        } catch (JwtException e) {
-            return null;
+                    .parseClaimsJws(token);
+            return true;
+        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
         }
+        return false;
     }
 
     public Long extractUserId(String token) {
