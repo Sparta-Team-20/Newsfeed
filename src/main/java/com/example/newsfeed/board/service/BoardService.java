@@ -12,6 +12,7 @@ import com.example.newsfeed.comment.dto.CommentCountDto;
 import com.example.newsfeed.comment.dto.response.CommentInfoResponseDto;
 import com.example.newsfeed.comment.entity.Comment;
 import com.example.newsfeed.comment.repository.CommentRepository;
+import com.example.newsfeed.comment.service.CommentDeleteService;
 import com.example.newsfeed.common.exception.CustomExceptionHandler;
 import com.example.newsfeed.common.exception.ErrorCode;
 import com.example.newsfeed.image.dto.response.ImageResponseDto;
@@ -35,6 +36,7 @@ public class BoardService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final BoardImageService boardImageService;
+    private final CommentDeleteService commentDeleteService;
 
     // 게시물 생성
     @Transactional
@@ -92,7 +94,8 @@ public class BoardService {
         if (!userId.equals(board.getUser().getId())) {
             throw new CustomExceptionHandler(ErrorCode.INVALID_USER_DELETE_BOARD);
         }
-        boardRepository.delete(board);
+        board.delete();
+        commentDeleteService.delete(board);
     }
 
     @Transactional(readOnly = true)

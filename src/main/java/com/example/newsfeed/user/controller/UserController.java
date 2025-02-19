@@ -8,6 +8,7 @@ import com.example.newsfeed.user.dto.response.UserSaveResponseDto;
 import com.example.newsfeed.user.dto.response.UserUpdateResponseDto;
 import com.example.newsfeed.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,7 +30,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/users/register")
-    public ResponseEntity<UserSaveResponseDto> save(@RequestBody UserSaveRequestDto request) {
+    public ResponseEntity<UserSaveResponseDto> save(@RequestBody @Valid UserSaveRequestDto request) {
         UserSaveResponseDto response = userService.save(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -46,12 +47,6 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /*@PostMapping("/users/{id}")
-    public ResponseEntity<UserFindOneResponseDto> follow(@PathVariable Long id, @SessionAttribute(name = "LOGIN_USER") Long userId) {
-        UserFindOneResponseDto response = userService.follow(userId, id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }*/
-
     @PostMapping("/users/me/{id}")
     public ResponseEntity<UserFindOneResponseDto> follow(@PathVariable Long id,
                                                          HttpServletRequest request) {
@@ -62,7 +57,7 @@ public class UserController {
 
     @PutMapping("/users/me")
     public ResponseEntity<UserUpdateResponseDto> update(HttpServletRequest request,
-                                                        @RequestBody UserUpdateRequestDto updateRequest) {
+                                                        @RequestBody @Valid UserUpdateRequestDto updateRequest) {
         Long userId = (Long) request.getAttribute("LOGIN_USER");
         UserUpdateResponseDto response = userService.update(userId, updateRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);

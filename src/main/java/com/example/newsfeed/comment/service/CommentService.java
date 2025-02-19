@@ -87,7 +87,7 @@ public class CommentService {
             throw new CustomExceptionHandler(ErrorCode.INVALID_USER_DELETE_COMMENT);
         }
 
-        commentRepository.delete(comment);
+        comment.delete();
     }
 
 }

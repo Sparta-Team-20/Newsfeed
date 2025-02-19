@@ -18,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Entity
 @NoArgsConstructor
 @Table(name = "boards")
+@Where(clause = "is_deleted = false")
 public class Board extends BaseEntity {
 
     @Id
@@ -42,6 +44,9 @@ public class Board extends BaseEntity {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardImage> images = new ArrayList<>();
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
+
     public Board(String title, String contents, User user) {
         this.title = title;
         this.contents = contents;
@@ -55,5 +60,7 @@ public class Board extends BaseEntity {
         this.images.addAll(images);
     }
 
-
+    public void delete() {
+        isDeleted = true;
+    }
 }
