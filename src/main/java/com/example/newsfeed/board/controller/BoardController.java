@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/boards")
 public class BoardController {
 
     private final BoardService boardService;
 
     // 게시물 생성
-    @PostMapping("/boards")
+    @PostMapping
     public ResponseEntity<BoardSaveResponseDto> save(HttpServletRequest request, @RequestBody BoardSaveRequestDto dto
     ) {
         Long userId = (Long) request.getAttribute("LOGIN_USER");
@@ -38,13 +38,13 @@ public class BoardController {
     }
 
     // 게시물 단건 조회
-    @GetMapping("/boards/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<BoardResponseDto> findOne(@PathVariable Long id) {
         return ResponseEntity.ok(boardService.findOne(id));
     }
 
     // 게시물 수정
-    @PutMapping("/boards/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<BoardUpdateResponseDto> update(
             HttpServletRequest request,
             @PathVariable Long id,
@@ -55,7 +55,7 @@ public class BoardController {
     }
 
     // 게시물 삭제
-    @DeleteMapping("/boards/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             HttpServletRequest request,
             @PathVariable Long id
@@ -66,7 +66,7 @@ public class BoardController {
     }
 
     // 게시물 페이지 API
-    @GetMapping("/boards/page")
+    @GetMapping("/page")
     public ResponseEntity<Page<BoardPageResponseDto>> findAllPage(@PageableDefault(size = 10) Pageable pageable) {
         Page<BoardPageResponseDto> result = boardService.findAllPage(pageable);
         return ResponseEntity.ok(result);

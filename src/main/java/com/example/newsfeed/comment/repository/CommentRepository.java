@@ -3,6 +3,8 @@ package com.example.newsfeed.comment.repository;
 import com.example.newsfeed.comment.dto.CommentCountDto;
 import com.example.newsfeed.comment.entity.Comment;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,7 +21,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * @param boardId 게시글의 고유 ID
      */
     @Query("SELECT c FROM Comment c WHERE c.board.id = :boardId ORDER BY c.modifiedAt DESC")
-    List<Comment> findAllByBoardId(Long boardId);
+    Page<Comment> findAllByBoardId(Long boardId, Pageable pageable);
 
     @Query("SELECT c FROM Comment c JOIN FETCH c.user WHERE c.board.id = :boardId")
     List<Comment> findAllByBoardIdAndUser(Long boardId);

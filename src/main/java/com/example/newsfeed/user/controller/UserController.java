@@ -25,30 +25,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/users/register")
+    @PostMapping("/register")
     public ResponseEntity<UserSaveResponseDto> save(@RequestBody @Valid UserSaveRequestDto request) {
         UserSaveResponseDto response = userService.save(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public ResponseEntity<List<UserFindAllResponseDto>> findAll() {
         List<UserFindAllResponseDto> responsePage = userService.findAll();
         return new ResponseEntity<>(responsePage, HttpStatus.OK);
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserFindOneResponseDto> findOne(@PathVariable Long id) {
         UserFindOneResponseDto response = userService.findOne(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/users/me/{id}")
+    @PostMapping("/me/{id}")
     public ResponseEntity<UserFindOneResponseDto> follow(@PathVariable Long id,
                                                          HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("LOGIN_USER");
@@ -56,7 +56,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/users/me")
+    @PutMapping("/me")
     public ResponseEntity<UserUpdateResponseDto> update(HttpServletRequest request,
                                                         @RequestBody @Valid UserUpdateRequestDto updateRequest) {
         Long userId = (Long) request.getAttribute("LOGIN_USER");
@@ -64,7 +64,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/users/me/addImage")
+    @PutMapping("/me/addImage")
     public ResponseEntity<UserUpdateResponseDto> addImage(HttpServletRequest request,
                                                           @RequestBody ImageSaveRequestDto requestDto) {
         Long userId = (Long) request.getAttribute("LOGIN_USER");
@@ -72,7 +72,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/users/me/deleteImage/{id}")
+    @PutMapping("/me/deleteImage/{id}")
     public ResponseEntity<UserUpdateResponseDto> deleteImage(HttpServletRequest request,
                                                              @PathVariable Long id) {
         Long userId = (Long) request.getAttribute("LOGIN_USER");
@@ -80,7 +80,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @DeleteMapping("/users/me")
+    @DeleteMapping("/me")
     public ResponseEntity<Void> delete(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("LOGIN_USER");
         userService.delete(userId);

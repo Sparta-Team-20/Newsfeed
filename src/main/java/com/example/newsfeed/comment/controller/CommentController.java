@@ -8,8 +8,10 @@ import com.example.newsfeed.comment.dto.response.CommentUpdateResponseDto;
 import com.example.newsfeed.comment.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,15 +44,16 @@ public class CommentController {
     }
 
     @GetMapping("/boards/{boardId}/comments")
-    public ResponseEntity<List<CommentResponseDto>> findAll(@PathVariable Long boardId) {
-        return ResponseEntity.ok(commentService.findAll(boardId));
+    public ResponseEntity<Page<CommentResponseDto>> findAll(@PathVariable Long boardId,
+                                                            @PageableDefault(size = 10) Pageable pageable) {
+
+        return ResponseEntity.ok(commentService.findAll(boardId, pageable));
     }
 
     @PatchMapping("/comments/{id}")
     public ResponseEntity<CommentUpdateResponseDto> update(@PathVariable Long id,
                                                            @RequestBody @Valid CommentUpdateRequestDto dto,
-                                                           HttpServletRequest request
-    ) {
+                                                           HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("LOGIN_USER");
 
         return ResponseEntity.ok(commentService.update(id, dto, userId));

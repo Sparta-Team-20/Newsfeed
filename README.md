@@ -32,7 +32,7 @@ SQL
 | 윤예진 | 팀원 |
 | 김수환 | 팀원 |
 
-### 역할분담
+### 역할 분담
 
 | 이름  | 담당 기능                                          |
 |-----|------------------------------------------------|
@@ -69,6 +69,10 @@ SQL
 ### 주요 요구사항
 
 [REQUIREMENT.md](REQUIREMENT.md)
+
+### 와이어 프레임
+
+![WireFrame.png](WireFrame.png)
 
 ### ERD
 
@@ -145,6 +149,8 @@ erDiagram
 
 ### API
 
+**Postman 사용하여 테스트**
+[Postman API](https://app.getpostman.com/join-team?invite_code=583b807abe8f31406ad9d0194e5b8a56d21b1bf45dcb7d3fdfd659cfffdc19af&target_code=d253d2a2a39d44ff1b64bd4787363d74)
 **인증**
 
 | 기능                  | HTTP Method          | URL           | Parameters | Request Body                                                                                   | Response                                                                     | HTTP Status        |

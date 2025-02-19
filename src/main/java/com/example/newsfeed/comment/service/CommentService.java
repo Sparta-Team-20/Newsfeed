@@ -13,8 +13,9 @@ import com.example.newsfeed.common.exception.CustomExceptionHandler;
 import com.example.newsfeed.common.exception.ErrorCode;
 import com.example.newsfeed.user.entity.User;
 import com.example.newsfeed.user.service.UserService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,13 +52,13 @@ public class CommentService {
     }
     
     // 게시물에 포함된 댓글 전체 조회
-    public List<CommentResponseDto> findAll(Long boardId) {
+    public Page<CommentResponseDto> findAll(Long boardId, Pageable pageable) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD)
                 );
 
-        List<Comment> comments = commentRepository.findAllByBoardId(board.getId());
-        return comments.stream().map(CommentResponseDto::of).toList();
+        Page<Comment> comments = commentRepository.findAllByBoardId(board.getId(), pageable);
+        return comments.map(CommentResponseDto::of);
     }
     
     // 댓글 수정
@@ -69,9 +70,7 @@ public class CommentService {
 
         User findUser = userService.findById(userId);
 
-        if (!comment.getUser().equals(findUser)) {
-            throw new CustomExceptionHandler(ErrorCode.INVALID_USER_UPDATE_COMMENT);
-        }
+        isEqualUserAndWriter(comment, findUser);
 
         comment.update(dto.getContents());
         return CommentUpdateResponseDto.of(comment);
@@ -86,11 +85,15 @@ public class CommentService {
 
         User findUser = userService.findById(userId);
 
+        isEqualUserAndWriter(comment, findUser);
+
+        comment.delete();
+    }
+
+    private void isEqualUserAndWriter(Comment comment, User findUser) {
         if (!comment.getUser().equals(findUser)) {
             throw new CustomExceptionHandler(ErrorCode.INVALID_USER_DELETE_COMMENT);
         }
-
-        comment.delete();
     }
 
 }
