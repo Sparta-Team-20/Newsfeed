@@ -17,7 +17,8 @@ public class AuthService {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-
+    
+    // 로그인
     public LoginResponseDto login(String email, String password) {
         User user = userService.findByEmail(email)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_MATCH_EMAIL));

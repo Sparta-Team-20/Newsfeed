@@ -5,10 +5,11 @@ import com.example.newsfeed.comment.service.CommentDeleteService;
 import com.example.newsfeed.common.config.PasswordEncoder;
 import com.example.newsfeed.common.exception.CustomExceptionHandler;
 import com.example.newsfeed.common.exception.ErrorCode;
+import com.example.newsfeed.common.utils.FileUtils;
 import com.example.newsfeed.follow.dto.FollowCountDto;
 import com.example.newsfeed.follow.entity.Follow;
 import com.example.newsfeed.follow.service.FollowService;
-import com.example.newsfeed.image.dto.response.ImageResponseDto;
+import com.example.newsfeed.image.dto.request.ImageSaveRequestDto;
 import com.example.newsfeed.image.entity.UserImage;
 import com.example.newsfeed.image.service.UserImageService;
 import com.example.newsfeed.user.dto.request.UserSaveRequestDto;
@@ -41,7 +42,7 @@ public class UserService {
     private final CommentDeleteService commentDeleteService;
     private final PasswordEncoder passwordEncoder;
 
-
+    // 유저 저장
     public UserSaveResponseDto save(UserSaveRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new CustomExceptionHandler(ErrorCode.ALREADY_EXIST_EMAIL);
@@ -52,11 +53,12 @@ public class UserService {
         UserImage userImage = UserImage.toEntity(user, request.getImage());
         userRepository.save(user);
         userImageService.save(userImage);
-        List<ImageResponseDto> imageResponseList = new ArrayList<>();
-        imageResponseList.add(ImageResponseDto.of(userImage));
-        return UserSaveResponseDto.of(user, imageResponseList);
+        List<String> images = new ArrayList<>();
+        images.add(FileUtils.joinFileName(userImage));
+        return UserSaveResponseDto.of(user, images);
     }
-
+    
+    // 유저 전체 조회
     public List<UserFindAllResponseDto> findAll() {
         List<User> users = userRepository.findAll();
         List<Long> userIds = users.stream()
@@ -70,44 +72,25 @@ public class UserService {
 
         List<UserImage> userImageList = userImageService.findLatestImagesPerUser(userIds);
 
-        Map<Long, UserImage> userImageMap = new HashMap<>();
-        for (UserImage userImage : userImageList) {
-            userImageMap.put(userImage.getUser().getId(), userImage); // 수정된 부분
-        }
+        Map<Long, UserImage> userImageMap = userImageList.stream().collect(
+                Collectors.toMap(userImage -> userImage.getUser().getId(), userImage -> userImage, (a, b) -> b));
 
         return users.stream().map(user -> UserFindAllResponseDto.of(user, userImageMap.get(user.getId()),
                 followerCountMap.getOrDefault(user.getId(), 0L))).toList();
     }
-
+    
+    // 유저 단건 조회
     public UserFindOneResponseDto findOne(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
-        List<ImageResponseDto> images = userImageService.findAllByUserId(id)
-                .stream().map(ImageResponseDto::of).toList();
+        List<String> images = userImageService.getUserImages(id);
 
-        List<Follow> followers = followService.findByFollowingId(user.getId());
-
-        List<Long> followerIds = followers.stream()
-                .map(follow -> follow.getFollower().getId())
-                .toList();
-
-        List<UserImage> followerImageList = userImageService.findLatestImagesPerUser(followerIds);
-
-        Map<Long, UserImage> userImageMap = new HashMap<>();
-        for (UserImage userImage : followerImageList) {
-            userImageMap.put(userImage.getUser().getId(), userImage);
-        }
-
-        List<UserInfoResponseDto> userInfoResponseDtos = followers.stream()
-                .map(follow -> UserInfoResponseDto.of(
-                        follow.getFollower(),
-                        ImageResponseDto.of(userImageMap.get(follow.getFollower().getId()))
-                ))
-                .toList();
+        List<UserInfoResponseDto> userInfoResponseDtos = getUserInfoResponses(user);
         return UserFindOneResponseDto.of(user, images, userInfoResponseDtos);
     }
-
+    
+    // 유저 팔로우 추가 or 취소
     @Transactional
     public UserFindOneResponseDto follow(Long userId, Long targetUserId) {
         User user = userRepository.findById(userId)
@@ -125,9 +108,74 @@ public class UserService {
             followService.save(follow);
         }
 
-        List<ImageResponseDto> images = userImageService.findAllByUserId(userId)
-                .stream().map(ImageResponseDto::of).toList();
+        List<String> images = userImageService.getUserImages(userId);
 
+        List<UserInfoResponseDto> userInfoResponseDtos = getUserInfoResponses(user);
+        return UserFindOneResponseDto.of(user, images, userInfoResponseDtos);
+    }
+    
+    // 유저 정보 수정
+    @Transactional
+    public UserUpdateResponseDto update(Long userId, UserUpdateRequestDto request) {
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        findUser.update(request, encodedPassword);
+
+        List<String> images = userImageService.getUserImages(userId);
+
+        return UserUpdateResponseDto.of(findUser, images);
+    }
+    
+    // 유저 탈퇴
+    @Transactional
+    public void delete(Long userId) {
+        User findUser = userRepository.findById(userId).orElseThrow();
+        findUser.delete();
+        boardDeleteService.delete(findUser);
+        commentDeleteService.delete(findUser);
+    }
+    
+    // 유저 이미지 추가
+    @Transactional
+    public UserUpdateResponseDto addImage(Long userId, ImageSaveRequestDto requestDto) {
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
+
+        userImageService.save(UserImage.toEntity(findUser, requestDto.getImage()));
+
+        List<String> images = userImageService.getUserImages(userId);
+
+        return UserUpdateResponseDto.of(findUser, images);
+    }
+    
+    // 유저 이미지 삭제
+    @Transactional
+    public UserUpdateResponseDto deleteImage(Long userId, Long imageId) {
+        User findUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
+
+        UserImage userImage = userImageService.findById(imageId)
+                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_IMAGE));
+        userImageService.delete(userImage);
+
+        List<String> images = userImageService.getUserImages(userId);
+
+        return UserUpdateResponseDto.of(findUser, images);
+    }
+    
+    // 유저 단건 조회
+    public User findById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
+    }
+
+    // 유저 단건조회(이메일 사용)
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+    
+    // List형식의 UserInfoResponse 만들기 위한 메서드
+    public List<UserInfoResponseDto> getUserInfoResponses(User user) {
         List<Follow> followers = followService.findByFollowingId(user.getId());
 
         List<Long> followerIds = followers.stream()
@@ -141,65 +189,11 @@ public class UserService {
             userImageMap.put(userImage.getUser().getId(), userImage);
         }
 
-        List<UserInfoResponseDto> userInfoResponseDtos = followers.stream()
+        return followers.stream()
                 .map(follow -> UserInfoResponseDto.of(
                         follow.getFollower(),
-                        ImageResponseDto.of(userImageMap.get(follow.getFollower().getId()))
+                        FileUtils.joinFileName(userImageMap.get(follow.getFollower().getId()))
                 ))
                 .toList();
-
-        return UserFindOneResponseDto.of(user, images, userInfoResponseDtos);
-    }
-
-    @Transactional
-    public UserUpdateResponseDto update(Long userId, UserUpdateRequestDto request) {
-        User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-        findUser.update(request, encodedPassword);
-
-        List<ImageResponseDto> images = userImageService.findAllByUserId(userId)
-                .stream().map(ImageResponseDto::of).toList();
-        return UserUpdateResponseDto.of(findUser, images);
-    }
-
-    @Transactional
-    public void delete(Long userId) {
-        User findUser = userRepository.findById(userId).orElseThrow();
-        findUser.delete();
-        boardDeleteService.delete(findUser);
-        commentDeleteService.delete(findUser);
-    }
-
-    public User findById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
-    }
-
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    @Transactional
-    public UserUpdateResponseDto addImage(Long userId, String image) {
-        User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
-
-        userImageService.save(UserImage.toEntity(findUser, image));
-        List<ImageResponseDto> images = userImageService.findAllByUserId(userId)
-                .stream().map(ImageResponseDto::of).toList();
-        return UserUpdateResponseDto.of(findUser, images);
-    }
-
-    @Transactional
-    public UserUpdateResponseDto deleteImage(Long userId, Long imageId) {
-        User findUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        //TODO : 예외처리 수정
-        UserImage userImage = userImageService.findById(imageId)
-                .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        userImageService.delete(userImage);
-        List<ImageResponseDto> images = userImageService.findAllByUserId(userId)
-                .stream().map(ImageResponseDto::of).toList();
-        return UserUpdateResponseDto.of(findUser, images);
     }
 }

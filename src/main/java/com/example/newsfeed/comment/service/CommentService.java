@@ -25,8 +25,9 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     private final UserService userService;
-
-    @Transactional
+    
+    
+    // 댓글 저장
     public CommentSaveResponseDto save(Long boardId, CommentSaveRequestDto dto, Long userId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD)
@@ -34,12 +35,12 @@ public class CommentService {
 
         User findUser = userService.findById(userId);
 
-        Comment comment = new Comment(dto.getContent(), board, findUser);
+        Comment comment = new Comment(dto.getContents(), board, findUser);
         Comment savedComment = commentRepository.save(comment);
         return CommentSaveResponseDto.of(savedComment);
     }
-
-    @Transactional(readOnly = true)
+    
+    // 댓글 단건 조회
     public CommentResponseDto findOne(Long boardId, Long id) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD)
@@ -48,8 +49,8 @@ public class CommentService {
         Comment comment = commentRepository.findByIdAndBoardId(id, board.getId());
         return CommentResponseDto.of(comment);
     }
-
-    @Transactional(readOnly = true)
+    
+    // 게시물에 포함된 댓글 전체 조회
     public List<CommentResponseDto> findAll(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_BOARD)
@@ -58,7 +59,8 @@ public class CommentService {
         List<Comment> comments = commentRepository.findAllByBoardId(board.getId());
         return comments.stream().map(CommentResponseDto::of).toList();
     }
-
+    
+    // 댓글 수정
     @Transactional
     public CommentUpdateResponseDto update(Long id, CommentUpdateRequestDto dto, Long userId) {
         Comment comment = commentRepository.findById(id).orElseThrow(
@@ -71,10 +73,11 @@ public class CommentService {
             throw new CustomExceptionHandler(ErrorCode.INVALID_USER_UPDATE_COMMENT);
         }
 
-        comment.update(dto.getContent());
+        comment.update(dto.getContents());
         return CommentUpdateResponseDto.of(comment);
     }
-
+    
+    // 댓글 삭제
     @Transactional
     public void delete(Long id, Long userId) {
         Comment comment = commentRepository.findById(id).orElseThrow(

@@ -17,12 +17,18 @@ public class BoardUpdateRequestDto {
 
     @NotBlank(message = TITLE_NOT_NULL)
     @Size(max = 20, message = TITLE_SIZE)
-    private String title;
+    private final String title;
 
     @NotBlank(message = CONTENTS_NOT_NULL)
     @Size(max = 200, message = CONTENTS_SIZE)
-    private String contents;
+    private final String contents;
 
     @NotEmpty(message = IMAGE_NOT_NULL)
-    private List<String> images;
+    private final List<String> images;
+
+    public BoardUpdateRequestDto(String title, String contents, List<String> images) {
+        this.title = title;
+        this.contents = contents;
+        this.images = images;
+    }
 }

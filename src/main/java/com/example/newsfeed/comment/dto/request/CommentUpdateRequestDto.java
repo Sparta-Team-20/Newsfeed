@@ -9,5 +9,9 @@ import lombok.Getter;
 public class CommentUpdateRequestDto {
     @NotBlank(message = Const.CONTENTS_NOT_NULL)
     @Size(min = 1, max = 50, message = Const.COMMENT_CONTENTS_SIZE)
-    private String content;
+    private final String contents;
+
+    public CommentUpdateRequestDto(String contents) {
+        this.contents = contents;
+    }
 }
