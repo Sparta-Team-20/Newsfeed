@@ -42,7 +42,7 @@ public class BoardController {
     public ResponseEntity<BoardResponseDto> findOne(@PathVariable Long id) {
         return ResponseEntity.ok(boardService.findOne(id));
     }
-
+    
     // 게시물 수정
     @PutMapping("/boards/{id}")
     public ResponseEntity<BoardUpdateResponseDto> update(
