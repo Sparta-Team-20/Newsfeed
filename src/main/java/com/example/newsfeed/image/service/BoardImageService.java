@@ -16,4 +16,8 @@ public class BoardImageService {
     public void save(List<BoardImage> boardImage) {
         boardImageRepository.saveAll(boardImage);
     }
+
+    public List<BoardImage> findAllByBoardIds(List<Long> boardIds) {
+        return boardImageRepository.findAllByBoardIdIn(boardIds);
+    }
 }
