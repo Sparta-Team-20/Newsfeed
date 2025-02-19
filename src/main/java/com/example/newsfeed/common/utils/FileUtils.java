@@ -6,8 +6,8 @@ import com.example.newsfeed.image.entity.UserImage;
 public class FileUtils {
 
     public static String[] splitFileName(String file) {
-        if (file == null) {
-            return new String[]{"", ""};
+        if (file == null || file.isBlank() || file.isEmpty()) {
+            return new String[]{"none", ".png"};
         }
 
         String extension = file.substring(file.lastIndexOf("."));
