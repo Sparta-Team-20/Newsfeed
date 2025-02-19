@@ -36,8 +36,4 @@ public class UserImage extends BaseEntity {
         String[] splitImage = FileUtils.splitFileName(images);
         return new UserImage(splitImage[0], splitImage[1], user);
     }
-
-    public static UserImage toEntity(User user, UserImage images) {
-        return new UserImage(images.getImageUrl(), images.getImageType(), user);
-    }
 }

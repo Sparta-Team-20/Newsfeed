@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 public class BoardImageService {
 
     private final BoardImageRepository boardImageRepository;
-
+    
+    // 게시물 이미지 저장
     public void save(List<BoardImage> boardImage) {
         boardImageRepository.saveAll(boardImage);
     }

@@ -67,8 +67,7 @@ public class BoardController {
 
     // 게시물 페이지 API
     @GetMapping("/boards/page")
-    public ResponseEntity<Page<BoardPageResponseDto>> findAllPage(@PageableDefault Pageable pageable) {
-
+    public ResponseEntity<Page<BoardPageResponseDto>> findAllPage(@PageableDefault(size = 10) Pageable pageable) {
         Page<BoardPageResponseDto> result = boardService.findAllPage(pageable);
         return ResponseEntity.ok(result);
     }

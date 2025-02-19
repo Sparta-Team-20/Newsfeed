@@ -2,8 +2,8 @@ package com.example.newsfeed.board.service;
 
 import com.example.newsfeed.board.dto.request.BoardSaveRequestDto;
 import com.example.newsfeed.board.dto.request.BoardUpdateRequestDto;
-import com.example.newsfeed.board.dto.response.BoardResponseDto;
 import com.example.newsfeed.board.dto.response.BoardPageResponseDto;
+import com.example.newsfeed.board.dto.response.BoardResponseDto;
 import com.example.newsfeed.board.dto.response.BoardSaveResponseDto;
 import com.example.newsfeed.board.dto.response.BoardUpdateResponseDto;
 import com.example.newsfeed.board.entity.Board;
@@ -15,7 +15,7 @@ import com.example.newsfeed.comment.repository.CommentRepository;
 import com.example.newsfeed.comment.service.CommentDeleteService;
 import com.example.newsfeed.common.exception.CustomExceptionHandler;
 import com.example.newsfeed.common.exception.ErrorCode;
-import com.example.newsfeed.image.dto.response.ImageResponseDto;
+import com.example.newsfeed.common.utils.FileUtils;
 import com.example.newsfeed.image.entity.BoardImage;
 import com.example.newsfeed.image.service.BoardImageService;
 import com.example.newsfeed.user.entity.User;
@@ -47,10 +47,27 @@ public class BoardService {
 
         boardRepository.save(board);
         boardImageService.save(images);
-        List<ImageResponseDto> imageResponseList = images.stream()
-                .map(ImageResponseDto::of).toList();
+        List<String> imageResponseList = images.stream()
+                .map(FileUtils::joinFileName).toList();
 
         return BoardSaveResponseDto.of(board, user, imageResponseList);
+    }
+    
+    // 게시물 페이지 조회
+    @Transactional(readOnly = true)
+    public Page<BoardPageResponseDto> findAllPage(Pageable pageable) {
+        Page<Board> boardPage = boardRepository.findAll(pageable);
+
+        List<Long> boardIds = boardPage.stream()
+                .map(Board::getId)
+                .collect(Collectors.toList());
+
+        List<CommentCountDto> countResults = commentRepository.countByBoardIds(boardIds);
+        Map<Long, Long> commentCountMap = countResults.stream()
+                .collect(Collectors.toMap(CommentCountDto::getBoardId, CommentCountDto::getCount));
+
+        return boardPage.map(
+                board -> BoardPageResponseDto.of(board, commentCountMap.getOrDefault(board.getId(), 0L)));
     }
 
     // 게시물 단건 조회
@@ -80,8 +97,8 @@ public class BoardService {
 
         findBoard.update(dto.getTitle(), dto.getContents(), boardImages);
 
-        List<ImageResponseDto> imageResponseDtos = boardImages.stream()
-                .map(ImageResponseDto::of)
+        List<String> imageResponseDtos = boardImages.stream()
+                .map(FileUtils::joinFileName)
                 .toList();
         return BoardUpdateResponseDto.of(findBoard, findUser, imageResponseDtos);
     }
@@ -96,28 +113,5 @@ public class BoardService {
         }
         board.delete();
         commentDeleteService.delete(board);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<BoardPageResponseDto> findAllPage(Pageable pageable) {
-        Page<Board> boardPage = boardRepository.findAll(pageable);
-
-        List<Long> boardIds = boardPage.stream()
-                .map(Board::getId)
-                .collect(Collectors.toList());
-
-        List<CommentCountDto> countResults = commentRepository.countByBoardIds(boardIds);
-        Map<Long, Long> commentCountMap = countResults.stream()
-                .collect(Collectors.toMap(CommentCountDto::getBoardId, CommentCountDto::getCount));
-
-        return boardPage.map(board -> new BoardPageResponseDto(
-                board.getId(),
-                board.getTitle(),
-                board.getContents(),
-                commentCountMap.getOrDefault(board.getId(), 0L).intValue(),
-                board.getCreatedAt(),
-                board.getModifiedAt(),
-                board.getUser().getName()
-        ));
     }
 }
