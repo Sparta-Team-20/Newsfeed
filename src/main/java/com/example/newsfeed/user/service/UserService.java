@@ -1,5 +1,7 @@
 package com.example.newsfeed.user.service;
 
+import com.example.newsfeed.board.service.BoardDeleteService;
+import com.example.newsfeed.comment.service.CommentDeleteService;
 import com.example.newsfeed.common.config.PasswordEncoder;
 import com.example.newsfeed.common.exception.CustomExceptionHandler;
 import com.example.newsfeed.common.exception.ErrorCode;
@@ -35,7 +37,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserImageService userImageService;
     private final FollowService followService;
+    private final BoardDeleteService boardDeleteService;
+    private final CommentDeleteService commentDeleteService;
     private final PasswordEncoder passwordEncoder;
+
 
     public UserSaveResponseDto save(UserSaveRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -75,7 +80,7 @@ public class UserService {
     }
 
     public UserFindOneResponseDto findOne(Long id) {
-        User user = userRepository.findUsersById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
 
         List<ImageResponseDto> images = userImageService.findAllByUserId(id)
@@ -105,9 +110,9 @@ public class UserService {
 
     @Transactional
     public UserFindOneResponseDto follow(Long userId, Long targetUserId) {
-        User user = userRepository.findUsersById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_USER));
-        User targetUser = userRepository.findUsersById(targetUserId)
+        User targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new CustomExceptionHandler(ErrorCode.NOT_FOUND_FOLLOW_USER));
 
         Optional<Follow> existingFollow = followService.findByFollowerIdAndFollowingId(userId, targetUserId);
@@ -162,6 +167,8 @@ public class UserService {
     public void delete(Long userId) {
         User findUser = userRepository.findById(userId).orElseThrow();
         findUser.delete();
+        boardDeleteService.delete(findUser);
+        commentDeleteService.delete(findUser);
     }
 
     public User findById(Long userId) {

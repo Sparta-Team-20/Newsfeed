@@ -11,11 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Getter
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
+@Where(clause = "is_deleted = false")
 public class User extends BaseEntity {
 
     @Id
@@ -29,7 +31,7 @@ public class User extends BaseEntity {
 
     private String name;
 
-    @Column(name = "is_delete")
+    @Column(name = "is_deleted")
     private boolean isDeleted;
 
     private User(String email, String password, String name) {
